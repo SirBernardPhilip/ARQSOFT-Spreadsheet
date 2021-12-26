@@ -3,10 +3,9 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 import java.util.List;
 import java.util.Optional;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidValueException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetToken;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 
 public class FormulaContent extends ACellContent {
 
@@ -18,20 +17,15 @@ public class FormulaContent extends ACellContent {
     /**
      * Formula factory to get the postfix generatior
      */
-    private ISpreadsheetExpressionGenerator expressionGenerator;
-    private List<ISpreadsheetToken> tokens;
+    private List<IFormulaElement> elements;
 
     /**
      * Creator of a formula content.
      * 
      * @param content
-     * @throws SpreadsheetFormulaException
      */
-    private FormulaContent(String content, ISpreadsheetExpressionGenerator expressionGenerator)
-            throws SpreadsheetFormulaException {
+    private FormulaContent(String content) {
         super(content);
-        this.expressionGenerator = expressionGenerator;
-        this.setValue(content);
     }
 
     /**
@@ -42,24 +36,24 @@ public class FormulaContent extends ACellContent {
      * @return FormulaContent
      * @throws MultiSpreadsheetFormulaException
      */
-    public static FormulaContent getInstance(String content, ISpreadsheetExpressionGenerator expressionGenerator)
-            throws SpreadsheetFormulaException {
-        return new FormulaContent(content, expressionGenerator);
+    public static FormulaContent getInstance(String content) {
+        return new FormulaContent(content);
     }
 
     /**
      * Parse the content to the corresponding value
      * 
      * @param content
-     * @throws MultiSpreadsheetFormulaException
+     * @throws MultiSpreadsheetException
      */
-    protected final void setValue(String content) throws SpreadsheetFormulaException {
-        this.expressionGenerator.generate(content.substring(1).replaceAll("\\s+", ""));
-        this.tokens = this.expressionGenerator.getTokens();
-        System.out.println(this.tokens);
-        this.value = Optional.empty();
-        // throw new UnsupportedOperationException("FormulaContent::setValue. Not
-        // implemented yet");
+    public void setValue(List<IFormulaElement> elements, Optional<Double> value) throws MultiSpreadsheetException {
+        this.elements = elements;
+        this.value = value;
+
+    }
+
+    public List<IFormulaElement> getElements() {
+        return this.elements;
     }
 
     /**

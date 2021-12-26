@@ -35,8 +35,7 @@ public class Main {
         } else {
             try {
                 Main.multiSpreadsheetFactory = AMultiSpreadsheetFactory.getInstance(args[0]);
-                Main.multiCellContentFactory = AMultiCellContentFactory.getInstance(args[1],
-                        Main.multiSpreadsheetFactory);
+                Main.multiCellContentFactory = AMultiCellContentFactory.getInstance(args[1]);
                 Main.userInterface = multiSpreadsheetFactory.getUserInterface(Main.multiSpreadsheetFactory,
                         Main.multiCellContentFactory);
 

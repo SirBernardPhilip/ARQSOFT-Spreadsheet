@@ -62,7 +62,7 @@ public class SpreadsheetPrinter implements ISpreadsheetPrinter {
         String cellContents[][] = this.getAllValuesMatrix(spreadsheet);
         for (int i = 0; i < cellContents.length; ++i) {
             for (int j = 0; j < cellContents[0].length; ++j) {
-                System.out.print(String.format("%8.8s", cellContents[i][j]));
+                System.out.print(String.format("%20.20s", cellContents[i][j]));
                 System.out.print(" ");
             }
             System.out.print("\n");

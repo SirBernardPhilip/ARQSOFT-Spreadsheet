@@ -3,8 +3,10 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
@@ -37,7 +39,9 @@ public interface ISpreadsheetFormulaFactory {
 
     public ISpreadsheetExpressionGenerator getSpreadsheetExpressionGenerator(ISpreadsheetFormulaFactory formulaFactory);
 
-    public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token) throws MultiSpreadsheetException;
+    public IExpressionEvaluator getExpressionEvaluator(ISpreadsheetFormulaFactory formulaFactory);
+
+    public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token, ISpreadsheet spreadsheet) throws MultiSpreadsheetException;
 
     public IFormulaElementVisitor getFormulaElementVisitor();
 }

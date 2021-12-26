@@ -1,13 +1,19 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.UserPrompter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetController;
@@ -19,9 +25,17 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory
  */
 public class SpreadsheetController extends AMultiSpreadsheetController {
 
+    private ISpreadsheetExpressionGenerator expressionGenerator;
+    private IExpressionEvaluator expressionEvaluator;
+
     protected SpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) {
+            AMultiCellContentFactory cellContentFactory) throws InvalidFormulaTypeException {
         super(spreadsheetFactory, cellContentFactory);
+        ISpreadsheetFormulaFactory formulaFactory = ISpreadsheetFormulaFactory.getInstance("default",
+                spreadsheetFactory);
+        this.expressionGenerator = formulaFactory.getSpreadsheetExpressionGenerator(formulaFactory);
+        this.expressionEvaluator = formulaFactory.getExpressionEvaluator(formulaFactory);
+
     }
 
     /**
@@ -33,7 +47,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      * @throws InvalidFormulaTypeException
      */
     public static SpreadsheetController getInstance(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) {
+            AMultiCellContentFactory cellContentFactory) throws InvalidFormulaTypeException {
         return new SpreadsheetController(spreadsheetFactory, cellContentFactory);
     }
 
@@ -127,7 +141,15 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         if (cellCoord.isPresent()) {
             ICellContent cellContent = this.spreadsheetFactory.getCellContent(cellContentString,
                     this.cellContentFactory);
+
+            if (cellContent instanceof FormulaContent) {
+                this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
+                List<IFormulaElement> elements = this.expressionGenerator.getElements(this.spreadsheet);
+                Optional<Double> value = this.expressionEvaluator.evaluate(elements);
+                ((FormulaContent) cellContent).setValue(elements, value);
+            }
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
+
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
 
         }

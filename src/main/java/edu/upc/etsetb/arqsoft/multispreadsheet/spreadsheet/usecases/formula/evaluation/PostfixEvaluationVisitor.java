@@ -1,6 +1,7 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Stack;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
@@ -11,9 +12,7 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eval
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.IStackValue;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackDoubleValue;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackListDoubleValue;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.NoValueComputedException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.UnexpectedStackTypeException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackListDoubleValue;import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.UnexpectedStackTypeException;
 
 public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
 
@@ -52,7 +51,7 @@ public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
     }
 
     @Override
-    public void visit(IFormulaOperand operand) {
+    public void visit(IFormulaOperand operand) throws MultiSpreadsheetException {
         this.stack.add(new StackDoubleValue(operand.getValue()));
     }
 
@@ -103,11 +102,11 @@ public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
     }
 
     @Override
-    public Double getResult() throws NoValueComputedException {
+    public Optional<Double> getResult() {
         if (this.stack.size() != 1 || this.stack.peek() instanceof StackListDoubleValue) {
-            throw new NoValueComputedException();
+            return Optional.empty();
         } else {
-            return ((StackDoubleValue) this.stack.peek()).getStackValue();
+            return Optional.of(((StackDoubleValue) this.stack.peek()).getStackValue());
         }
     }
 

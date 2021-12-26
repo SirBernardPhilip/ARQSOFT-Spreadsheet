@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaFunction;
@@ -28,6 +31,7 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.eval
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaPromedioFunction;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSubtractOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSumOperator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.PostfixEvaluation;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.PostfixEvaluationVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.postfix.SpreadsheetPostfixGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.syntax.SpreadsheetSyntaxChecker;
@@ -69,7 +73,8 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
     }
 
     @Override
-    public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token) throws MultiSpreadsheetException {
+    public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token, ISpreadsheet spreadsheet)
+            throws MultiSpreadsheetException {
         if (token.isNumber()) {
             return Arrays.asList(FormulaNumeric.getInstance(Double.parseDouble(token.getTokenString())));
         } else if (token.isOperator()) {
@@ -77,8 +82,15 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
         } else if (token.isFunction()) {
             return Arrays.asList(this.getFunction(token));
         } else if (token.isCell()) {
+            ICellCoordinate cellCoordinate = this.spreadsheetFactory.getCellCoordinate(token.getTokenString());
+            Optional<Double> value = Optional.empty();
+            try {
+                value = Optional.of(spreadsheet.getCellNumericalValue(cellCoordinate));
+            } catch (MultiSpreadsheetException e) {
+                System.out.println("Error getting value from a cell.");
+            }
             return Arrays.asList(FormulaCellReference
-                    .getInstance(this.spreadsheetFactory.getCellCoordinate(token.getTokenString())));
+                    .getInstance(cellCoordinate, value));
         } else if (token.isCellRange()) {
             ICellCoordinate topLeft = this.spreadsheetFactory
                     .getCellCoordinate(token.getTokenString().split(":", 0)[0]);
@@ -88,7 +100,13 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
             List<IFormulaElement> elements = new LinkedList<IFormulaElement>();
             Boolean first = true;
             for (ICellCoordinate coord : allCoords) {
-                elements.add(FormulaCellReference.getInstance(coord));
+                Optional<Double> value = Optional.empty();
+                try {
+                    value = Optional.of(spreadsheet.getCellNumericalValue(coord));
+                } catch (MultiSpreadsheetException e) {
+                    System.out.println("Error getting value from a cell.");
+                }
+                elements.add(FormulaCellReference.getInstance(coord, value));
                 if (!first) {
                     elements.add(FormulaFunctionArgumentSeparator.getInstance());
                 }
@@ -135,6 +153,11 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
     @Override
     public IFormulaElementVisitor getFormulaElementVisitor() {
         return PostfixEvaluationVisitor.getInstance();
+    }
+
+    @Override
+    public IExpressionEvaluator getExpressionEvaluator(ISpreadsheetFormulaFactory formulaFactory) {
+        return PostfixEvaluation.getInstance(formulaFactory);
     }
 
 }

@@ -6,12 +6,11 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.CellContentF
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.exceptions.InvalidCellContentGenerationTypeException;
 
 public abstract class AMultiCellContentFactory {
-    public static AMultiCellContentFactory getInstance(String generationType,
-            AMultiSpreadsheetFactory spreadsheetFactory)
+    public static AMultiCellContentFactory getInstance(String generationType)
             throws MultiSpreadsheetException, InvalidCellContentGenerationTypeException {
         switch (generationType.toLowerCase()) {
             case "default":
-                return new CellContentFactory(generationType, spreadsheetFactory);
+                return new CellContentFactory();
             default:
                 throw new InvalidCellContentGenerationTypeException(generationType);
         }

@@ -1,5 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaOperand;
 
@@ -16,7 +17,7 @@ public class FormulaNumeric implements IFormulaOperand {
     }
 
     @Override
-    public void accept(IFormulaElementVisitor visitor) {
+    public void accept(IFormulaElementVisitor visitor) throws MultiSpreadsheetException {
         visitor.visit(this);
     }
 

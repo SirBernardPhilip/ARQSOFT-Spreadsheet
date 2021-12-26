@@ -21,14 +21,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory
 /** @author bernatfelip */
 public class UserInterface extends AUserInterface {
 
-    protected UserInterface(AMultiSpreadsheetFactory spreadsheetFactory, AMultiCellContentFactory cellContentFactory) {
+    protected UserInterface(AMultiSpreadsheetFactory spreadsheetFactory, AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException {
         super(spreadsheetFactory, cellContentFactory);
         this.spreadsheetController = this.spreadsheetFactory.getController(this.spreadsheetFactory, cellContentFactory);
 
     }
 
     public static UserInterface getInstance(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) {
+            AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException {
         return new UserInterface(spreadsheetFactory, cellContentFactory);
     }
 

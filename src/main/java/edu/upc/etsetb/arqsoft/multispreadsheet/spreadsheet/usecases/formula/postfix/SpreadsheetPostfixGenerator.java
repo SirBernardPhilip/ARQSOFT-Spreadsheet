@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.syntax.ISpreadsheetSyntaxChecker;
@@ -84,8 +87,13 @@ public class SpreadsheetPostfixGenerator implements ISpreadsheetExpressionGenera
     }
 
     @Override
-    public List<ISpreadsheetToken> getTokens() {
-        return this.tokens;
+    public List<IFormulaElement> getElements(ISpreadsheet spreadsheet) throws MultiSpreadsheetException {
+        List<IFormulaElement> elements = new LinkedList<IFormulaElement>();
+        for (ISpreadsheetToken token : this.tokens) {
+            List<IFormulaElement> obtainedElements = this.formulaFactory.getFormulaElements(token, spreadsheet);
+            elements.addAll(obtainedElements);
+        }
+        return elements;
     }
 
 }

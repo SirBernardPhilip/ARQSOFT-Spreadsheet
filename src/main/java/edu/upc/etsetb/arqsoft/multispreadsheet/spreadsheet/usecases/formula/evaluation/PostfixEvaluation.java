@@ -1,16 +1,15 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetToken;
 
-public class PostfixEvaluation {
+public class PostfixEvaluation implements IExpressionEvaluator {
 
     private IFormulaElementVisitor visitor;
     private ISpreadsheetFormulaFactory formulaFactory;
@@ -24,12 +23,7 @@ public class PostfixEvaluation {
         return new PostfixEvaluation(formulaFactory);
     }
 
-    public Double evaluate(List<ISpreadsheetToken> tokens) throws MultiSpreadsheetException {
-        List<IFormulaElement> elements = new LinkedList<IFormulaElement>();
-        for (ISpreadsheetToken token : tokens) {
-            List<IFormulaElement> obtainedElements = this.formulaFactory.getFormulaElements(token);
-            elements.addAll(obtainedElements);
-        }
+    public Optional<Double> evaluate(List<IFormulaElement> elements) throws MultiSpreadsheetException {
         for (IFormulaElement element : elements) {
             element.accept(this.visitor);
         }
