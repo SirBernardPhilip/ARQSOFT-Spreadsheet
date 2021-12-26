@@ -5,6 +5,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eval
 
 public class FormulaSubtractOperator implements IFormulaOperator {
 
+    private FormulaSubtractOperator() {
+
+    }
+
+    public static FormulaSubtractOperator getInstance() {
+        return new FormulaSubtractOperator();
+    }
+
     @Override
     public Double operate(Double leftOperand, Double rightOperand) {
         return leftOperand - rightOperand;

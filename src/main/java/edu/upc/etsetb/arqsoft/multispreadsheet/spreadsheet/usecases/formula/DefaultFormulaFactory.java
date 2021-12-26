@@ -11,6 +11,9 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.toke
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetToken;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetTokenInfo;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetTokenizer;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaDivideOperator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaMultiplyOperator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSumOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.postfix.SpreadsheetPostfixGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.syntax.SpreadsheetSyntaxChecker;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.tokens.SpreadsheetToken;
@@ -42,7 +45,13 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
 
     @Override
     public IFormulaElement getFormulaElement(ISpreadsheetToken token) {
-        return null;
+        if(token.isMult()){
+            return FormulaMultiplyOperator.getInstance();
+        } else if (token.isDiv()){
+            return FormulaDivideOperator.getInstance();
+        } else if(token.isPlus()){
+            return FormulaSumOperator.getInstance();
+        } else if
     }
 
     @Override

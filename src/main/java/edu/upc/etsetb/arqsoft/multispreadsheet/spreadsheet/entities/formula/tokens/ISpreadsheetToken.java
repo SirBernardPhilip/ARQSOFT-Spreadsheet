@@ -1,6 +1,5 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens;
 
-
 public interface ISpreadsheetToken {
 
     public ESpreadsheetTokenType getTokenType();
@@ -9,7 +8,15 @@ public interface ISpreadsheetToken {
 
     public boolean isPlusMinus();
 
+    public boolean isPlus();
+
+    public boolean isMinus();
+
     public boolean isMultDiv();
+
+    public boolean isMult();
+
+    public boolean isDiv();
 
     public boolean isOperator();
 

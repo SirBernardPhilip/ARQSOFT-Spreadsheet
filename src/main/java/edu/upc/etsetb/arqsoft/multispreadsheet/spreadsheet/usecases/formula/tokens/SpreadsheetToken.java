@@ -84,4 +84,28 @@ public class SpreadsheetToken implements ISpreadsheetToken {
         return this.tokenType == ESpreadsheetTokenType.RANGE;
     }
 
+    @Override
+    public boolean isPlus() {
+        return this.tokenType == ESpreadsheetTokenType.OPERATOR
+                && this.tokenString.equals("+");
+    }
+
+    @Override
+    public boolean isMinus() {
+        return this.tokenType == ESpreadsheetTokenType.OPERATOR
+                && this.tokenString.equals("-");
+    }
+
+    @Override
+    public boolean isMult() {
+        return this.tokenType == ESpreadsheetTokenType.OPERATOR
+                && this.tokenString.equals("*");
+    }
+
+    @Override
+    public boolean isDiv() {
+        return this.tokenType == ESpreadsheetTokenType.OPERATOR
+                && this.tokenString.equals("/");
+    }
+
 }

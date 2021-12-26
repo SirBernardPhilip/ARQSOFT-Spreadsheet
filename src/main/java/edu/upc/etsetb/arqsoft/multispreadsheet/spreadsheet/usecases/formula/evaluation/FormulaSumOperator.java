@@ -5,6 +5,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eval
 
 public class FormulaSumOperator implements IFormulaOperator{
 
+    private FormulaSumOperator() {
+
+    }
+
+    public static FormulaSumOperator getInstance() {
+        return new FormulaSumOperator();
+    }
+
     @Override
     public Double operate(Double leftOperand, Double rightOperand) {
         return leftOperand + rightOperand;
