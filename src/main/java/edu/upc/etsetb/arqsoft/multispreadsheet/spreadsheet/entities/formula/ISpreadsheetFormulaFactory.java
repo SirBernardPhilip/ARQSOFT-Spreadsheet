@@ -3,6 +3,8 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula;
 import java.util.regex.Pattern;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.syntax.ISpreadsheetSyntaxChecker;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ESpreadsheetTokenType;
@@ -30,4 +32,7 @@ public interface ISpreadsheetFormulaFactory{
     public ISpreadsheetSyntaxChecker getSpreadsheetSyntaxChecker();
 
     public ISpreadsheetExpressionGenerator getSpreadsheetExpressionGenerator(ISpreadsheetFormulaFactory formulaFactory);
+
+    public IFormulaElement getFormulaElement(ISpreadsheetToken token);
+    public IFormulaElementVisitor getFormulaElementVisitor();
 }

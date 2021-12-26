@@ -3,6 +3,8 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula;
 import java.util.regex.Pattern;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.syntax.ISpreadsheetSyntaxChecker;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ESpreadsheetTokenType;
@@ -36,6 +38,16 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
     public ISpreadsheetExpressionGenerator getSpreadsheetExpressionGenerator(ISpreadsheetFormulaFactory formulaFactory) {
         return SpreadsheetPostfixGenerator.getInstance(formulaFactory);
 
+    }
+
+    @Override
+    public IFormulaElement getFormulaElement(ISpreadsheetToken token) {
+        return null;
+    }
+
+    @Override
+    public IFormulaElementVisitor getFormulaElementVisitor() {
+        return null;
     }
 
 }

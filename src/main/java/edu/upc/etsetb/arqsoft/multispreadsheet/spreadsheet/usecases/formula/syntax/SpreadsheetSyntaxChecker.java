@@ -124,8 +124,20 @@ public class SpreadsheetSyntaxChecker implements ISpreadsheetSyntaxChecker {
     private void func_argument() throws MissingParenthesisException, UnexpectedTokenException {
         if (lookahead.isPresent() && lookahead.get().isCellRange()) {
             nextToken();
+        } else if (lookahead.isPresent() && lookahead.get().isFunction()) {
+            nextToken();
+            if (!lookahead.isPresent() || !lookahead.get().isOpenPar()) {
+                throw new MissingParenthesisException(lookahead.isPresent() ? lookahead.get().getTokenString() : "EOF");
+            }
+            nextToken();
+            func_argument();
+            func_add_argument();
+            if (!lookahead.isPresent() || !lookahead.get().isClosePar()) {
+                throw new MissingParenthesisException(lookahead.isPresent() ? lookahead.get().getTokenString() : "EOF");
+            }
+            nextToken();
         } else {
-            factor();
+            value();
         }
     }
 
