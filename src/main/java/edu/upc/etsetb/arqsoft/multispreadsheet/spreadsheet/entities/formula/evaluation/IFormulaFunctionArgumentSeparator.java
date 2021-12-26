@@ -1,5 +1,5 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation;
 
-public interface IFormulaFunctionArgument {
-    
+public interface IFormulaFunctionArgumentSeparator extends IFormulaElement {
+
 }

@@ -1,8 +1,10 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidNumberCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidStringCoordinatesException;
 
@@ -212,5 +214,17 @@ public class CellCoordinate implements ICellCoordinate {
         }
 
         return columnName.reverse().toString();
+    }
+
+    public static ArrayList<ICellCoordinate> getAllCoordinates(ICellCoordinate topLeft, ICellCoordinate bottomRight)
+            throws MultiSpreadsheetException {
+        ArrayList<ICellCoordinate> coordinates = new ArrayList<ICellCoordinate>();
+        for (Integer row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
+            for (Integer columnNumber = topLeft.getColumnNumber(); columnNumber <= bottomRight
+                    .getColumnNumber(); columnNumber++) {
+                coordinates.add(new CellCoordinate(row, CellCoordinate.getColumnName(columnNumber)));
+            }
+        }
+        return coordinates;
     }
 }

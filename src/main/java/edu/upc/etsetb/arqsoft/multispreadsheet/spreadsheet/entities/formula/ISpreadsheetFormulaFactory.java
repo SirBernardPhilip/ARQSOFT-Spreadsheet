@@ -1,7 +1,9 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
@@ -12,12 +14,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.toke
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetTokenInfo;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tokens.ISpreadsheetTokenizer;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.DefaultFormulaFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
-public interface ISpreadsheetFormulaFactory{
-    public static ISpreadsheetFormulaFactory getInstance(String formulaType) throws InvalidFormulaTypeException {
+public interface ISpreadsheetFormulaFactory {
+    public static ISpreadsheetFormulaFactory getInstance(String formulaType,
+            AMultiSpreadsheetFactory spreadsheetFactory) throws InvalidFormulaTypeException {
         switch (formulaType.toLowerCase()) {
             case "default":
-                return new DefaultFormulaFactory();
+                return new DefaultFormulaFactory(spreadsheetFactory);
             default:
                 throw new InvalidFormulaTypeException(formulaType);
         }
@@ -33,6 +37,7 @@ public interface ISpreadsheetFormulaFactory{
 
     public ISpreadsheetExpressionGenerator getSpreadsheetExpressionGenerator(ISpreadsheetFormulaFactory formulaFactory);
 
-    public IFormulaElement getFormulaElement(ISpreadsheetToken token);
+    public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token) throws MultiSpreadsheetException;
+
     public IFormulaElementVisitor getFormulaElementVisitor();
 }

@@ -9,17 +9,18 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpr
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
+import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
-public class CellContentFactory extends AMultiCellContentFactory{
+public class CellContentFactory extends AMultiCellContentFactory {
 
     private ISpreadsheetFormulaFactory formulaFactory;
     private ISpreadsheetExpressionGenerator expressionGenerator;
 
-    public CellContentFactory(String generationType) throws InvalidFormulaTypeException {
-        this.formulaFactory = ISpreadsheetFormulaFactory.getInstance(generationType);
+    public CellContentFactory(String generationType, AMultiSpreadsheetFactory spreadsheetFactory)
+            throws InvalidFormulaTypeException {
+        this.formulaFactory = ISpreadsheetFormulaFactory.getInstance(generationType, spreadsheetFactory);
         this.expressionGenerator = this.formulaFactory.getSpreadsheetExpressionGenerator(formulaFactory);
     }
-
 
     /**
      * Method that returns the needed CellContent for the given content

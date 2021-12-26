@@ -80,4 +80,5 @@ public class CellCoordinateRange implements ICellCoordinateRange {
     public ICellCoordinate getBottomRight() {
         return bottomRight;
     }
+
 }

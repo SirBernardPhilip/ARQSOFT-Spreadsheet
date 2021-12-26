@@ -2,6 +2,6 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eva
 
 import java.util.List;
 
-public interface IFormulaFunction extends IFormulaOperand {
+public interface IFormulaFunction extends IFormulaElement {
     public Double evaluate(List<Double> arguments);
 }
