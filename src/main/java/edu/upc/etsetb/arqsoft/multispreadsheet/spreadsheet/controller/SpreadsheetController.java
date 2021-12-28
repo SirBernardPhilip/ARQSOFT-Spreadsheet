@@ -145,7 +145,12 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             if (cellContent instanceof FormulaContent) {
                 this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
                 List<IFormulaElement> elements = this.expressionGenerator.getElements(this.spreadsheet);
-                Optional<Double> value = this.expressionEvaluator.evaluate(elements);
+                Optional<Double> value;
+                try {
+                    value = Optional.of(this.expressionEvaluator.evaluate(elements));
+                } catch (MultiSpreadsheetException e) {
+                    value = Optional.empty();
+                }
                 ((FormulaContent) cellContent).setValue(elements, value);
             }
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);

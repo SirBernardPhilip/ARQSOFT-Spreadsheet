@@ -81,7 +81,7 @@ public class FormulaContent extends ACellContent {
     @Override
     public String getStringValue() {
         if (this.value.isPresent()) {
-            return String.valueOf(this.value);
+            return String.valueOf(this.value.get());
 
         } else {
             return "Err";

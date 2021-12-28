@@ -1,7 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation;
 
 import java.util.List;
-import java.util.Optional;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
@@ -23,7 +22,7 @@ public class PostfixEvaluation implements IExpressionEvaluator {
         return new PostfixEvaluation(formulaFactory);
     }
 
-    public Optional<Double> evaluate(List<IFormulaElement> elements) throws MultiSpreadsheetException {
+    public Double evaluate(List<IFormulaElement> elements) throws MultiSpreadsheetException {
         for (IFormulaElement element : elements) {
             element.accept(this.visitor);
         }

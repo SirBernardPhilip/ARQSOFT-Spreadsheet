@@ -1,7 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Stack;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
@@ -12,7 +11,8 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eval
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.IStackValue;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackDoubleValue;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackListDoubleValue;import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.UnexpectedStackTypeException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackListDoubleValue;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.UnexpectedStackTypeException;
 
 public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
 
@@ -102,11 +102,11 @@ public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
     }
 
     @Override
-    public Optional<Double> getResult() {
+    public Double getResult() throws MultiSpreadsheetException {
         if (this.stack.size() != 1 || this.stack.peek() instanceof StackListDoubleValue) {
-            return Optional.empty();
+            throw new MultiSpreadsheetException("The evaluation did not obtain a valid result");
         } else {
-            return Optional.of(((StackDoubleValue) this.stack.peek()).getStackValue());
+            return ((StackDoubleValue) this.stack.peek()).getStackValue();
         }
     }
 
