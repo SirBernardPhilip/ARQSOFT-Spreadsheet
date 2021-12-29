@@ -14,7 +14,6 @@ public class FormulaContent extends ACellContent {
      */
     private Optional<Double> value;
 
-
     private List<IFormulaElement> elements;
 
     /**
@@ -38,20 +37,23 @@ public class FormulaContent extends ACellContent {
         return new FormulaContent(content);
     }
 
+    public void setElements(List<IFormulaElement> elements) {
+        this.elements = elements;
+    }
+
+    public List<IFormulaElement> getElements() {
+        return this.elements;
+    }
+
     /**
      * Parse the content to the corresponding value
      * 
      * @param content
      * @throws MultiSpreadsheetException
      */
-    public void setValue(List<IFormulaElement> elements, Optional<Double> value) {
-        this.elements = elements;
+    public void setValue(Optional<Double> value) {
         this.value = value;
 
-    }
-
-    public List<IFormulaElement> getElements() {
-        return this.elements;
     }
 
     /**

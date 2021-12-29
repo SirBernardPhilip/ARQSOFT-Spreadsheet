@@ -168,6 +168,8 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                 }
 
                 if (elements.isPresent()) {
+                    ((FormulaContent) cellContent).setElements(elements.get());
+
                     Optional<Double> value;
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
@@ -182,7 +184,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                         value = Optional.empty();
                     }
 
-                    ((FormulaContent) cellContent).setValue(elements.get(), value);
+                    ((FormulaContent) cellContent).setValue(value);
                 }
 
             }
