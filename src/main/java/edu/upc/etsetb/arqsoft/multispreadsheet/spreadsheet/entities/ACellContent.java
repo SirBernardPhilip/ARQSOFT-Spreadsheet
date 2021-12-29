@@ -32,6 +32,7 @@ public abstract class ACellContent implements ICellContent{
      * Obtain the value as a number
      * 
      * @return Double
+     * @throws InvalidValueException
      */
     public abstract Double getNumericalValue() throws InvalidValueException;
 

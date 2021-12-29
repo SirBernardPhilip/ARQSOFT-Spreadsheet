@@ -13,5 +13,7 @@ public interface ISpreadsheetTokenizer {
      */
     public void tokenize(String str) throws SpreadsheetTokenizerException;
 
+    public void reset();
+
     public List<ISpreadsheetToken> getTokens();
 }

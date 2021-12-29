@@ -5,4 +5,5 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsh
 public interface IFormulaOperand extends IFormulaElement {
 
     public Double getValue() throws MultiSpreadsheetException;
+
 }

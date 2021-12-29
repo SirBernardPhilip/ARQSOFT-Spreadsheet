@@ -16,8 +16,8 @@ public class SpreadsheetSyntaxChecker implements ISpreadsheetSyntaxChecker {
     private Optional<ISpreadsheetToken> lookahead;
 
     private SpreadsheetSyntaxChecker() {
-        this.inputTokens = new LinkedList<>();
-        this.tokens = new LinkedList<>();
+        this.inputTokens = new LinkedList<ISpreadsheetToken>();
+        this.tokens = new LinkedList<ISpreadsheetToken>();
         this.lookahead = Optional.empty();
     }
 
@@ -155,5 +155,12 @@ public class SpreadsheetSyntaxChecker implements ISpreadsheetSyntaxChecker {
     @Override
     public List<ISpreadsheetToken> getTokens() {
         return this.tokens;
+    }
+
+    @Override
+    public void reset() {
+        this.inputTokens = new LinkedList<ISpreadsheetToken>();
+        this.tokens = new LinkedList<ISpreadsheetToken>();
+        this.lookahead = Optional.empty();
     }
 }

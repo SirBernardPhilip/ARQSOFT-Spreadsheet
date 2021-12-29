@@ -14,4 +14,6 @@ public interface IFormulaElementVisitor {
     public void visit(IFormulaOperand operator) throws MultiSpreadsheetException;
 
     public Double getResult() throws SpreadsheetFormulaException, MultiSpreadsheetException;
+
+    public void reset();
 }

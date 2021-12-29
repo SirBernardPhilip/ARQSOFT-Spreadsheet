@@ -12,13 +12,13 @@ public class FormulaCellReference implements IFormulaOperand {
     private ICellCoordinate cellCoordinate;
     private Optional<Double> value;
 
-    private FormulaCellReference(ICellCoordinate cellCoordinate, Optional<Double> value) {
+    private FormulaCellReference(ICellCoordinate cellCoordinate) {
         this.cellCoordinate = cellCoordinate;
-        this.value = value;
+        this.value = Optional.empty();
     }
 
-    public static FormulaCellReference getInstance(ICellCoordinate cellCoordinate, Optional<Double> value) {
-        return new FormulaCellReference(cellCoordinate, value);
+    public static FormulaCellReference getInstance(ICellCoordinate cellCoordinate) {
+        return new FormulaCellReference(cellCoordinate);
     }
 
     @Override
@@ -37,6 +37,10 @@ public class FormulaCellReference implements IFormulaOperand {
         } else {
             throw new MultiSpreadsheetException("Value missing");
         }
+    }
+
+    public void setValue(Double value) {
+        this.value = Optional.of(value);
     }
 
 }

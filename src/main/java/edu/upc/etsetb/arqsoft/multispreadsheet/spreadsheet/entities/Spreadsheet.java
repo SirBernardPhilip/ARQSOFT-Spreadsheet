@@ -12,9 +12,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.ForbiddenCellSubstitutionException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidNumberCoordinatesException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidStringCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
 public class Spreadsheet implements ISpreadsheet {
@@ -47,31 +44,14 @@ public class Spreadsheet implements ISpreadsheet {
      * Obtain a cell in the given coordinate.
      * 
      * @param cellCoordinate
-     * @return Cell
+     * @return Optional<Cell>
      */
     @Override
     public Optional<ICell> getCell(ICellCoordinate cellCoordinate) {
         if (!this.cells.containsKey(cellCoordinate)) {
-
             return Optional.empty();
         }
         return Optional.of(this.cells.get(cellCoordinate));
-    }
-
-    /**
-     * Obtain a cell in the given coordinate.
-     * 
-     * @param cellCoordinate
-     * @return Cell
-     * @throws ForbiddenCellSubstitutionException
-     */
-    @Override
-    public void putCell(ICellCoordinate cellCoordinate, ICell cell) throws ForbiddenCellSubstitutionException {
-        if (this.cells.containsKey(cellCoordinate)) {
-
-            throw new ForbiddenCellSubstitutionException(cellCoordinate);
-        }
-        this.cells.put(cellCoordinate, cell);
     }
 
     /**
@@ -157,20 +137,15 @@ public class Spreadsheet implements ISpreadsheet {
      * 
      * Edit the content of the cell
      * 
-     * @param cellCoordinateString
+     * @param cellCoordinate
      * @param cellContent
-     * @throws NumberFormatException
-     * @throws InvalidStringCoordinatesException
-     * @throws InvalidNumberCoordinatesException
-     * @throws ForbiddenCellSubstitutionException
-     * @throws ForbiddenCellEditionException
      */
     @Override
-    public void setCellContent(ICellCoordinate cellCoordinate, ICellContent cellContent) throws ForbiddenCellSubstitutionException {
+    public void setCellContent(ICellCoordinate cellCoordinate, ICellContent cellContent) {
         Optional<ICell> cell = this.getCell(cellCoordinate);
         if (!cell.isPresent()) {
             ICell newCell = this.spreadsheetFactory.getCell(cellContent);
-            this.putCell(cellCoordinate, newCell);
+            this.cells.put(cellCoordinate, newCell);
         } else {
             cell.get().setContent(cellContent);
         }

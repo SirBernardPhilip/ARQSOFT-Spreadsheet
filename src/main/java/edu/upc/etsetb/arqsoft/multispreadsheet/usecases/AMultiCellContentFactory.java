@@ -1,13 +1,12 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.usecases;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
-import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.CellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.exceptions.InvalidCellContentGenerationTypeException;
 
 public abstract class AMultiCellContentFactory {
     public static AMultiCellContentFactory getInstance(String generationType)
-            throws MultiSpreadsheetException, InvalidCellContentGenerationTypeException {
+            throws InvalidCellContentGenerationTypeException {
         switch (generationType.toLowerCase()) {
             case "default":
                 return new CellContentFactory();
@@ -16,6 +15,6 @@ public abstract class AMultiCellContentFactory {
         }
     }
 
-    public abstract ICellContent getCellContent(String cellContentString) throws MultiSpreadsheetException;
+    public abstract ICellContent getCellContent(String cellContentString);
 
 }

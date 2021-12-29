@@ -1,6 +1,5 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.run;
 
-import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.AUserInterface;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
@@ -43,7 +42,7 @@ public class Main {
                 while (continueExecution) {
                     continueExecution = userInterface.readCommand();
                 }
-            } catch (InvalidSpreadsheetTypeException | MultiSpreadsheetException
+            } catch (InvalidSpreadsheetTypeException
                     | InvalidCellContentGenerationTypeException e) {
                 Main.printUsage();
             }

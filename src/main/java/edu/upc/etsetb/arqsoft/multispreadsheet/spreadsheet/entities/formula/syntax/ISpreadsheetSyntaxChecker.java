@@ -8,5 +8,8 @@ public interface ISpreadsheetSyntaxChecker {
 
     public void check(List<ISpreadsheetToken> tokens) throws SpreadsheetSyntaxException;
 
+    public void reset();
+
+
     public List<ISpreadsheetToken> getTokens();
 }

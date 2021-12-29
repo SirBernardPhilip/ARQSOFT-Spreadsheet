@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.exceptions.EmptyCommandException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.exceptions.InvalidCommandException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.exceptions.MissingArgumentException;
@@ -21,14 +20,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory
 /** @author bernatfelip */
 public class UserInterface extends AUserInterface {
 
-    protected UserInterface(AMultiSpreadsheetFactory spreadsheetFactory, AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException {
+    protected UserInterface(AMultiSpreadsheetFactory spreadsheetFactory, AMultiCellContentFactory cellContentFactory) {
         super(spreadsheetFactory, cellContentFactory);
         this.spreadsheetController = this.spreadsheetFactory.getController(this.spreadsheetFactory, cellContentFactory);
 
     }
 
     public static UserInterface getInstance(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException {
+            AMultiCellContentFactory cellContentFactory) {
         return new UserInterface(spreadsheetFactory, cellContentFactory);
     }
 
@@ -53,13 +52,18 @@ public class UserInterface extends AUserInterface {
             System.out.println();
             try {
                 return this.runCommand(line);
-            } catch (InvalidCommandException | MissingArgumentException | EmptyCommandException
-                    | FileNotFoundException e) {
-                // TODO: Should do different prints for every exception
+            } catch (InvalidCommandException e) {
                 System.out.println(String.format("The command %s is not valid", line));
                 return true;
-            } catch (MultiSpreadsheetException e) {
-                e.printStackTrace();
+            } catch (MissingArgumentException e) {
+                System.out.println(String.format("The command %s is missing an argument", line));
+                return true;
+            } catch (EmptyCommandException e) {
+                System.out.println("The command is empty");
+                return true;
+            } catch (FileNotFoundException e) {
+                System.out.println("The file could not be accessed");
+                return true;
             }
         }
         return false;
@@ -74,13 +78,11 @@ public class UserInterface extends AUserInterface {
      * @throws MissingArgumentException
      * @throws EmptyCommandException
      * @throws FileNotFoundException
-     * @throws MultiSpreadsheetException
      */
     private boolean runCommand(String line)
-            throws MissingArgumentException, InvalidCommandException, EmptyCommandException, FileNotFoundException,
-            MultiSpreadsheetException {
+            throws MissingArgumentException, InvalidCommandException, EmptyCommandException, FileNotFoundException {
         String[] parsedLine = line.split(" ", 3);
-        if (parsedLine.length < 1) {
+        if (parsedLine.length < 1 || parsedLine[0].trim().length() == 0) {
             throw new EmptyCommandException();
         }
         switch (parsedLine[0]) {

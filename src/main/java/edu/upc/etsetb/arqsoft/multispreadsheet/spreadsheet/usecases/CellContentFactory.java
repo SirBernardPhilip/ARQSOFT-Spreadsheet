@@ -4,7 +4,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.ACellContent
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.NumericalContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.TextualContent;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 
 public class CellContentFactory extends AMultiCellContentFactory {
@@ -18,11 +17,11 @@ public class CellContentFactory extends AMultiCellContentFactory {
      * @param content
      * @return CellContent
      * @throws InvalidFormulaTypeException
-     * @throws MultiSpreadsheetFormulaException
      */
-    public ACellContent getCellContent(String content)
-            throws InvalidFormulaTypeException {
-        if (content.length() >= 2 && content.charAt(0) == '=') {
+    public ACellContent getCellContent(String content) {
+        if (content.length() >= 2 && content.charAt(0) == '=')
+
+        {
             return FormulaContent.getInstance(content);
         } else {
             try {

@@ -24,16 +24,15 @@ public abstract class AMultiSpreadsheetFactory {
         }
 
         public abstract AUserInterface getUserInterface(AMultiSpreadsheetFactory spreadsheetFactory,
-                        AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException;
+                        AMultiCellContentFactory cellContentFactory);
 
         public abstract AMultiSpreadsheetController getController(AMultiSpreadsheetFactory spreadsheetFactory,
-                        AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException;
+                        AMultiCellContentFactory cellContentFactory);
 
         public abstract ICell getCell(ICellContent cellContent);
 
         public abstract ICellContent getCellContent(String cellContentString,
-                        AMultiCellContentFactory cellContentFactory)
-                        throws MultiSpreadsheetException;
+                        AMultiCellContentFactory cellContentFactory);
 
         public abstract ICellCoordinateRange getCellCoordinateRange(ICellCoordinate topLeft, ICellCoordinate botRight)
                         throws MultiSpreadsheetException;

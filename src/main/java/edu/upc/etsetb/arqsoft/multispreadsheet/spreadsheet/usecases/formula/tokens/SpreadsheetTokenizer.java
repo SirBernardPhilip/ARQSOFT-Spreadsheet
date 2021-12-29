@@ -69,4 +69,9 @@ public class SpreadsheetTokenizer implements ISpreadsheetTokenizer {
     public LinkedList<ISpreadsheetToken> getTokens() {
         return this.tokens;
     }
+
+    @Override
+    public void reset() {
+        this.tokens = new LinkedList<ISpreadsheetToken>();        
+    }
 }

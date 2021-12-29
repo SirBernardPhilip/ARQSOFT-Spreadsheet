@@ -27,16 +27,6 @@ public interface ISpreadsheet {
         public Optional<ICell> getCell(ICellCoordinate cellCoordinate);
 
         /**
-         * Put a cell in the given coordinate.
-         * 
-         * @param cellCoordinate
-         * @param cell
-         * @return ICell
-         * @throws MultiSpreadsheetException
-         */
-        public void putCell(ICellCoordinate cellCoordinate, ICell cell) throws MultiSpreadsheetException;
-
-        /**
          * 
          * Get the content of the cell (or "" if the cell has never been edited)
          * 
@@ -82,6 +72,5 @@ public interface ISpreadsheet {
          * @param cellContent
          * @throws MultiSpreadsheetException
          */
-        public void setCellContent(ICellCoordinate cellCoordinate, ICellContent cellContent)
-                        throws MultiSpreadsheetException;
+        public void setCellContent(ICellCoordinate cellCoordinate, ICellContent cellContent);
 }

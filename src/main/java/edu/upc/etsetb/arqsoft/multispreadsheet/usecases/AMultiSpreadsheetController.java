@@ -1,7 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.usecases;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
-import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetPrinter;
@@ -67,5 +66,5 @@ public abstract class AMultiSpreadsheetController {
      * @param cellCoord
      * @param cellContent
      */
-    public abstract void editCell(String cellCoord, String cellContent) throws MultiSpreadsheetException;
+    public abstract void editCell(String cellCoord, String cellContent);
 }

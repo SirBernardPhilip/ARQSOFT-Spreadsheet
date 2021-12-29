@@ -46,7 +46,7 @@ public class FormulaContent extends ACellContent {
      * @param content
      * @throws MultiSpreadsheetException
      */
-    public void setValue(List<IFormulaElement> elements, Optional<Double> value) throws MultiSpreadsheetException {
+    public void setValue(List<IFormulaElement> elements, Optional<Double> value) {
         this.elements = elements;
         this.value = value;
 

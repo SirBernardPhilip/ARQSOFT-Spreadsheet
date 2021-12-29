@@ -14,16 +14,16 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.eval
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.visitorStack.StackListDoubleValue;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.exceptions.UnexpectedStackTypeException;
 
-public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
+public class PostfixEvaluatorVisitor implements IFormulaElementVisitor {
 
     private Stack<IStackValue> stack;
 
-    private PostfixEvaluationVisitor() {
+    private PostfixEvaluatorVisitor() {
         this.stack = new Stack<IStackValue>();
     }
 
-    public static PostfixEvaluationVisitor getInstance() {
-        return new PostfixEvaluationVisitor();
+    public static PostfixEvaluatorVisitor getInstance() {
+        return new PostfixEvaluatorVisitor();
     }
 
     private StackDoubleValue assertIsStackDoubleValue(IStackValue value) throws UnexpectedStackTypeException {
@@ -108,6 +108,11 @@ public class PostfixEvaluationVisitor implements IFormulaElementVisitor {
         } else {
             return ((StackDoubleValue) this.stack.peek()).getStackValue();
         }
+    }
+
+    @Override
+    public void reset() {
+        this.stack = new Stack<IStackValue>();
     }
 
 }

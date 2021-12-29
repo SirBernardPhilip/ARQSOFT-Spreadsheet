@@ -9,7 +9,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
@@ -29,10 +28,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
     private IExpressionEvaluator expressionEvaluator;
 
     protected SpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) throws InvalidFormulaTypeException {
+            AMultiCellContentFactory cellContentFactory) {
         super(spreadsheetFactory, cellContentFactory);
-        ISpreadsheetFormulaFactory formulaFactory = ISpreadsheetFormulaFactory.getInstance("default",
-                spreadsheetFactory);
+        ISpreadsheetFormulaFactory formulaFactory = ISpreadsheetFormulaFactory.getInstance(spreadsheetFactory);
         this.expressionGenerator = formulaFactory.getSpreadsheetExpressionGenerator(formulaFactory);
         this.expressionEvaluator = formulaFactory.getExpressionEvaluator(formulaFactory);
 
@@ -44,10 +42,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      * 
      * @param spreadsheet
      * @return SpreadsheetController
-     * @throws InvalidFormulaTypeException
      */
     public static SpreadsheetController getInstance(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) throws InvalidFormulaTypeException {
+            AMultiCellContentFactory cellContentFactory) {
         return new SpreadsheetController(spreadsheetFactory, cellContentFactory);
     }
 
@@ -131,7 +128,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      * @param cellContentString
      * @throws MultiSpreadsheetException
      */
-    public void editCell(String cellCoordString, String cellContentString) throws MultiSpreadsheetException {
+    public void editCell(String cellCoordString, String cellContentString) {
         Optional<ICellCoordinate> cellCoord = Optional.empty();
         try {
             cellCoord = Optional.of(this.spreadsheetFactory.getCellCoordinate(cellCoordString));
@@ -143,15 +140,30 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     this.cellContentFactory);
 
             if (cellContent instanceof FormulaContent) {
-                this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
-                List<IFormulaElement> elements = this.expressionGenerator.getElements(this.spreadsheet);
-                Optional<Double> value;
+                this.expressionGenerator.reset();
+                this.expressionEvaluator.reset();
+                Optional<List<IFormulaElement>> elements;
+
                 try {
-                    value = Optional.of(this.expressionEvaluator.evaluate(elements));
+                    this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
+                    elements = Optional.of(this.expressionGenerator.getElements());
                 } catch (MultiSpreadsheetException e) {
-                    value = Optional.empty();
+                    System.out.println("The formula is invalid.");
+                    elements = Optional.empty();
                 }
-                ((FormulaContent) cellContent).setValue(elements, value);
+
+                if (elements.isPresent()) {
+                    Optional<Double> value;
+                    try {
+                        value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+                    } catch (MultiSpreadsheetException e) {
+                        System.out.println("There was an issue evaluating the formula.");
+                        e.printStackTrace();
+                        value = Optional.empty();
+                    }
+                    ((FormulaContent) cellContent).setValue(elements.get(), value);
+                }
+
             }
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
 

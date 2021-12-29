@@ -8,7 +8,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.Cell;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinateRange;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.Spreadsheet;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidFormulaTypeException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidNumberCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidStringCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.SpreadsheetExporter;
@@ -31,13 +30,13 @@ public class SpreadsheetFactory extends AMultiSpreadsheetFactory {
 
     @Override
     public UserInterface getUserInterface(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) throws MultiSpreadsheetException {
+            AMultiCellContentFactory cellContentFactory) {
         return UserInterface.getInstance(spreadsheetFactory, cellContentFactory);
     }
 
     @Override
     public SpreadsheetController getController(AMultiSpreadsheetFactory spreadsheetFactory,
-            AMultiCellContentFactory cellContentFactory) throws InvalidFormulaTypeException {
+            AMultiCellContentFactory cellContentFactory) {
         return SpreadsheetController.getInstance(spreadsheetFactory, cellContentFactory);
     }
 
@@ -71,8 +70,7 @@ public class SpreadsheetFactory extends AMultiSpreadsheetFactory {
     }
 
     @Override
-    public ICellContent getCellContent(String cellContentString, AMultiCellContentFactory cellContentFactory)
-            throws MultiSpreadsheetException {
+    public ICellContent getCellContent(String cellContentString, AMultiCellContentFactory cellContentFactory) {
         return cellContentFactory.getCellContent(cellContentString);
 
     }

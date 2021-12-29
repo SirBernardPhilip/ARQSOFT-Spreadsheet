@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
-import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
@@ -87,13 +86,20 @@ public class SpreadsheetPostfixGenerator implements ISpreadsheetExpressionGenera
     }
 
     @Override
-    public List<IFormulaElement> getElements(ISpreadsheet spreadsheet) throws MultiSpreadsheetException {
+    public List<IFormulaElement> getElements() throws MultiSpreadsheetException {
         List<IFormulaElement> elements = new LinkedList<IFormulaElement>();
         for (ISpreadsheetToken token : this.tokens) {
-            List<IFormulaElement> obtainedElements = this.formulaFactory.getFormulaElements(token, spreadsheet);
+            List<IFormulaElement> obtainedElements = this.formulaFactory.getFormulaElements(token);
             elements.addAll(obtainedElements);
         }
         return elements;
+    }
+
+    @Override
+    public void reset() {
+        this.tokens = new LinkedList<ISpreadsheetToken>();
+        this.syntaxChecker.reset();
+        this.tokenizer.reset();
     }
 
 }
