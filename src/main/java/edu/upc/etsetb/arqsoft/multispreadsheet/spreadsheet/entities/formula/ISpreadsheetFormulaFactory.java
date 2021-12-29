@@ -37,4 +37,6 @@ public interface ISpreadsheetFormulaFactory {
     public List<IFormulaElement> getFormulaElements(ISpreadsheetToken token) throws MultiSpreadsheetException;
 
     public IFormulaElementVisitor getFormulaElementVisitor();
+
+    public ICellDependencyManager getDependencyManager();
 }

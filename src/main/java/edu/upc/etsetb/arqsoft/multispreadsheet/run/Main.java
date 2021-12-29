@@ -30,7 +30,22 @@ public class Main {
      */
     public static void main(String args[]) {
         if (args.length != 2) {
-            Main.printUsage();
+            // Main.printUsage();
+            // For debugging purposes
+            try {
+                Main.multiSpreadsheetFactory = AMultiSpreadsheetFactory.getInstance("spreadsheet");
+                Main.multiCellContentFactory = AMultiCellContentFactory.getInstance("default");
+                Main.userInterface = multiSpreadsheetFactory.getUserInterface(Main.multiSpreadsheetFactory,
+                        Main.multiCellContentFactory);
+
+                boolean continueExecution = true;
+                while (continueExecution) {
+                    continueExecution = userInterface.readCommand();
+                }
+            } catch (InvalidSpreadsheetTypeException
+                    | InvalidCellContentGenerationTypeException e) {
+                Main.printUsage();
+            }
         } else {
             try {
                 Main.multiSpreadsheetFactory = AMultiSpreadsheetFactory.getInstance(args[0]);

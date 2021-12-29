@@ -7,7 +7,7 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.I
  * Abstract cell content class
  * 
  */
-public abstract class ACellContent implements ICellContent{
+public abstract class ACellContent implements ICellContent {
     protected String content;
 
     /**
@@ -42,4 +42,5 @@ public abstract class ACellContent implements ICellContent{
      * @return String
      */
     public abstract String getStringValue();
+
 }

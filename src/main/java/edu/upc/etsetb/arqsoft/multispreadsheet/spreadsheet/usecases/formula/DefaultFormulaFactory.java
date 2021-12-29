@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinate;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
@@ -145,6 +146,11 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
     @Override
     public IExpressionEvaluator getExpressionEvaluator(ISpreadsheetFormulaFactory formulaFactory) {
         return PostfixEvaluator.getInstance(formulaFactory);
+    }
+
+    @Override
+    public ICellDependencyManager getDependencyManager() {
+        return CellDependencyManager.getInstance();
     }
 
 }

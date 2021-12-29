@@ -1,6 +1,7 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.controller;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,10 +10,12 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaCellReference;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.UserPrompter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetController;
@@ -26,6 +29,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
     private ISpreadsheetExpressionGenerator expressionGenerator;
     private IExpressionEvaluator expressionEvaluator;
+    private ICellDependencyManager dependencyManager;
 
     protected SpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
@@ -33,6 +37,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         ISpreadsheetFormulaFactory formulaFactory = ISpreadsheetFormulaFactory.getInstance(spreadsheetFactory);
         this.expressionGenerator = formulaFactory.getSpreadsheetExpressionGenerator(formulaFactory);
         this.expressionEvaluator = formulaFactory.getExpressionEvaluator(formulaFactory);
+        this.dependencyManager = formulaFactory.getDependencyManager();
 
     }
 
@@ -72,6 +77,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
     public void createSpreadsheet() {
         this.optionallySaveCurrent();
         this.spreadsheet = this.spreadsheetFactory.getSpreadsheet(this.spreadsheetFactory);
+        this.dependencyManager.reset();
     }
 
     /**
@@ -136,6 +142,8 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             System.out.println("Invalid coordinate.");
         }
         if (cellCoord.isPresent()) {
+            this.dependencyManager.removeDependantCell(cellCoord.get());
+
             ICellContent cellContent = this.spreadsheetFactory.getCellContent(cellContentString,
                     this.cellContentFactory);
 
@@ -147,6 +155,13 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                 try {
                     this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
                     elements = Optional.of(this.expressionGenerator.getElements());
+                    List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
+                    for (IFormulaElement element : elements.get()) {
+                        if (element instanceof FormulaCellReference) {
+                            cellCoordinates.add(((FormulaCellReference) element).getCellCoordinate());
+                        }
+                    }
+                    this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
                 } catch (MultiSpreadsheetException e) {
                     System.out.println("The formula is invalid.");
                     elements = Optional.empty();
@@ -154,13 +169,19 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
                 if (elements.isPresent()) {
                     Optional<Double> value;
-                    try {
-                        value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
-                    } catch (MultiSpreadsheetException e) {
-                        System.out.println("There was an issue evaluating the formula.");
-                        e.printStackTrace();
+
+                    if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
+                        try {
+                            value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+                        } catch (MultiSpreadsheetException e) {
+                            System.out.println("There was an issue evaluating the formula.");
+                            value = Optional.empty();
+                        }
+                    } else {
+                        System.out.println("There was a circular reference.");
                         value = Optional.empty();
                     }
+
                     ((FormulaContent) cellContent).setValue(elements.get(), value);
                 }
 

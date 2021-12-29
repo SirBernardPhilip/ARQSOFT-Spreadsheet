@@ -14,9 +14,7 @@ public class FormulaContent extends ACellContent {
      */
     private Optional<Double> value;
 
-    /**
-     * Formula factory to get the postfix generatior
-     */
+
     private List<IFormulaElement> elements;
 
     /**
