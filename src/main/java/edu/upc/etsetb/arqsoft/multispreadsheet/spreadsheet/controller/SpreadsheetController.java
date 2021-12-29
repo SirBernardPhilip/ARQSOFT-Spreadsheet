@@ -126,6 +126,24 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         // System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
     }
 
+    private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
+        List<ICellCoordinate> cellCoordinates = this.dependencyManager.getDependantCells(originalCellCoordinate);
+        for (ICellCoordinate cellCoordinate : cellCoordinates) {
+            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(cellCoordinate).get()
+                    .getContentClass();
+            Optional<Double> value;
+            try {
+                value = Optional.of(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+            } catch (MultiSpreadsheetException e) {
+                System.out.println("There was an issue evaluating the formula.");
+                e.printStackTrace();
+                value = Optional.empty();
+            }
+            cellContent.setValue(value);
+            this.updateDependantCells(cellCoordinate);
+        }
+    }
+
     /**
      * Method that calls the appropiate method in the domain to edit the contents of
      * a cell.
@@ -189,7 +207,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
             }
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
-
+            this.updateDependantCells(cellCoord.get());
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
 
         }

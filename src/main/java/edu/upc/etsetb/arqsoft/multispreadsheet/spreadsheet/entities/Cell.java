@@ -37,6 +37,11 @@ public class Cell implements ICell {
         return this.content.getContent();
     }
 
+    @Override
+    public ICellContent getContentClass() {
+        return this.content;
+    }
+
     /**
      * Set the content of the cell
      * 
@@ -69,4 +74,5 @@ public class Cell implements ICell {
     public Double getNumericalValue() throws MultiSpreadsheetException {
         return this.content.getNumericalValue();
     }
+
 }

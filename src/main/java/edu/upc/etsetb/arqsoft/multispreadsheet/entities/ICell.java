@@ -15,6 +15,8 @@ public interface ICell {
      */
     public String getContent();
 
+    public ICellContent getContentClass();
+
     /**
      * Set the content of the cell
      * 
