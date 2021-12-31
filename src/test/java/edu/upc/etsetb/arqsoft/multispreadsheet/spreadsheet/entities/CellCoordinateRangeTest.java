@@ -1,4 +1,4 @@
-package edu.upc.etsetb.arqsoft.spreadsheet.entities;
+package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinate;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinateRange;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidRangeCoordinatesException;
 
 /** @author bernatfelip */

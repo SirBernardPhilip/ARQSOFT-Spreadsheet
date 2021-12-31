@@ -94,7 +94,8 @@ public class Spreadsheet implements ISpreadsheet {
      * @throws MultiSpreadsheetException
      */
     @Override
-    public Double getCellNumericalValue(ICellCoordinate cellCoordinate) throws MultiSpreadsheetException {
+    public Double getCellNumericalValue(ICellCoordinate cellCoordinate)
+            throws MultiSpreadsheetException {
         if (this.cells.containsKey(cellCoordinate)) {
             return this.cells.get(cellCoordinate).getNumericalValue();
         }

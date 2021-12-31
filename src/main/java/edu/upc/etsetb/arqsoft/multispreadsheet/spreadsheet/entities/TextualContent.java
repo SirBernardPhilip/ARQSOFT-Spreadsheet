@@ -1,5 +1,7 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.NoNumberException;
+
 public class TextualContent extends ACellContent {
 
     /**
@@ -27,7 +29,6 @@ public class TextualContent extends ACellContent {
         return new TextualContent(content);
     }
 
-
     /**
      * 
      * Set the content to the value
@@ -46,11 +47,15 @@ public class TextualContent extends ACellContent {
      * @throws NumberFormatException
      */
     @Override
-    public Double getNumericalValue() throws NumberFormatException {
+    public Double getNumericalValue() throws NoNumberException {
         if (this.value.trim() == "") {
             return 0d;
         } else {
-            return Double.parseDouble(this.value);
+            try {
+                return Double.parseDouble(this.value);
+            } catch (NumberFormatException e) {
+                throw new NoNumberException(this.value);
+            }
         }
     }
 

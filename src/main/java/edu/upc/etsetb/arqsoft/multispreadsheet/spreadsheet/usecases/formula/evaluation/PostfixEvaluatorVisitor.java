@@ -92,7 +92,7 @@ public class PostfixEvaluatorVisitor implements IFormulaElementVisitor {
     @Override
     public void visit(IFormulaFunction function) {
         IStackValue first = this.stack.pop();
-        if (first instanceof IStackValue) {
+        if (first instanceof StackDoubleValue) {
             StackDoubleValue parsed = (StackDoubleValue) first;
             this.stack.push(new StackDoubleValue(function.evaluate(Arrays.asList(parsed.getStackValue()))));
         } else {

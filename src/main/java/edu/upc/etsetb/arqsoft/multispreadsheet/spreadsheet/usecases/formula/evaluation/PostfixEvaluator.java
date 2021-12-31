@@ -23,11 +23,11 @@ public class PostfixEvaluator implements IExpressionEvaluator {
         return new PostfixEvaluator(formulaFactory);
     }
 
-    public Double evaluate(List<IFormulaElement> elements, ISpreadsheet spreadsheet) throws MultiSpreadsheetException {
+    public Double evaluate(List<IFormulaElement> elements, ISpreadsheet spreadsheet)
+            throws MultiSpreadsheetException, NumberFormatException {
         for (IFormulaElement element : elements) {
             if (element instanceof FormulaCellReference) {
                 FormulaCellReference cellReferenceElement = (FormulaCellReference) element;
-                spreadsheet.getCellNumericalValue(cellReferenceElement.getCellCoordinate());
                 cellReferenceElement
                         .setValue(spreadsheet.getCellNumericalValue(cellReferenceElement.getCellCoordinate()));
 

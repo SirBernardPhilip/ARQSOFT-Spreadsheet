@@ -2,8 +2,8 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.tok
 
 public enum ESpreadsheetTokenType {
     OPERATOR("[+\\-*/]"),
-    RANGE("[A-Z]+[1-9]+:[A-Z]+[1-9]+"),
-    CELL("[A-Z]+[1-9]+"),
+    RANGE("[A-Z]+\\d+:[A-Z]+\\d+"),
+    CELL("[A-Z]+\\d+"),
     NUM("([0-9]*[.])?[0-9]+"),
     OPENING_PAR("\\("),
     CLOSING_PAR("\\)"),

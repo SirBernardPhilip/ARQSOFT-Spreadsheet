@@ -1,4 +1,4 @@
-package edu.upc.etsetb.arqsoft.spreadsheet.entities;
+package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;

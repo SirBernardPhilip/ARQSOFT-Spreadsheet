@@ -1,7 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.usecases;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetPrinter;
 
@@ -12,7 +11,6 @@ public abstract class AMultiSpreadsheetController {
     protected ISpreadsheetExporter spreadsheetExporter;
     protected AMultiSpreadsheetFactory spreadsheetFactory;
     protected AMultiCellContentFactory cellContentFactory;
-    protected ISpreadsheetExpressionGenerator expressionGenerator;
 
     protected AMultiSpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {

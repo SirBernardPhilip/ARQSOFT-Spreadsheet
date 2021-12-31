@@ -1,9 +1,12 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
@@ -127,20 +130,43 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
     }
 
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
-        List<ICellCoordinate> cellCoordinates = this.dependencyManager.getDependantCells(originalCellCoordinate);
-        for (ICellCoordinate cellCoordinate : cellCoordinates) {
-            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(cellCoordinate).get()
+        Map<ICellCoordinate, Boolean> visitedCells = new HashMap<ICellCoordinate, Boolean>();
+        visitedCells.put(originalCellCoordinate, true);
+
+        Queue<ICellCoordinate> queue = new LinkedList<ICellCoordinate>();
+        List<ICellCoordinate> neighborCellCoordinates = this.dependencyManager
+                .getDependantCells(originalCellCoordinate);
+
+        for (ICellCoordinate neighbor : neighborCellCoordinates) {
+            if (!visitedCells.containsKey(neighbor)) {
+                visitedCells.put(neighbor, true);
+                queue.add(neighbor);
+            }
+        }
+        while (queue.size() != 0) {
+            ICellCoordinate top = queue.poll();
+
+            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
             Optional<Double> value;
             try {
+                this.expressionGenerator.reset();
+                this.expressionEvaluator.reset();
                 value = Optional.of(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
-            } catch (MultiSpreadsheetException e) {
-                System.out.println("There was an issue evaluating the formula.");
-                e.printStackTrace();
+            } catch (MultiSpreadsheetException | NumberFormatException e) {
                 value = Optional.empty();
             }
             cellContent.setValue(value);
-            this.updateDependantCells(cellCoordinate);
+
+            neighborCellCoordinates = this.dependencyManager.getDependantCells(top);
+
+            for (ICellCoordinate neighbor : neighborCellCoordinates) {
+                if (!visitedCells.containsKey(neighbor)) {
+                    visitedCells.put(neighbor, true);
+                    queue.add(neighbor);
+                }
+            }
+
         }
     }
 
@@ -181,7 +207,6 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     }
                     this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
                 } catch (MultiSpreadsheetException e) {
-                    System.out.println("The formula is invalid.");
                     elements = Optional.empty();
                 }
 
@@ -193,8 +218,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
                         try {
                             value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
-                        } catch (MultiSpreadsheetException e) {
-                            System.out.println("There was an issue evaluating the formula.");
+                        } catch (MultiSpreadsheetException | NumberFormatException e) {
                             value = Optional.empty();
                         }
                     } else {

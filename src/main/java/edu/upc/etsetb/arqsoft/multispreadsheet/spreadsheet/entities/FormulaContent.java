@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidValueException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.NoNumberException;
 
 public class FormulaContent extends ACellContent {
 
@@ -64,11 +64,11 @@ public class FormulaContent extends ACellContent {
      * @throws InvalidValueException
      */
     @Override
-    public Double getNumericalValue() throws InvalidValueException {
+    public Double getNumericalValue() throws NoNumberException {
         if (this.value.isPresent()) {
             return this.value.get();
         } else {
-            throw new InvalidValueException();
+            throw new NoNumberException();
         }
     }
 
