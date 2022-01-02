@@ -5,9 +5,12 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.marker.ISpre
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
@@ -49,6 +52,8 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
 
     public void setCellContent(String cellCoordString, String cellContentString)
             throws MultiSpreadsheetException {
+
+        Boolean foundCircular = false;
         Optional<ICellCoordinate> cellCoord = Optional.empty();
 
         cellCoord = Optional.of(this.spreadsheetFactory.getCellCoordinate(cellCoordString));
@@ -80,11 +85,11 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                     Optional<Double> value;
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
-
                         value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
-
                     } else {
-                        throw new CircularDependencyException();
+                        foundCircular = true;
+                        System.out.println("There was a circular reference.");
+                        value = Optional.empty();
                     }
 
                     ((FormulaContent) cellContent).setValue(value);
@@ -94,13 +99,31 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
             this.updateDependantCells(cellCoord.get());
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
+            if (foundCircular) {
+                throw new CircularDependencyException();
+            }
+
         }
     }
 
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
-        List<ICellCoordinate> cellCoordinates = this.dependencyManager.getDependantCells(originalCellCoordinate);
-        for (ICellCoordinate cellCoordinate : cellCoordinates) {
-            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(cellCoordinate).get()
+        Map<ICellCoordinate, Boolean> visitedCells = new HashMap<ICellCoordinate, Boolean>();
+        visitedCells.put(originalCellCoordinate, true);
+
+        Queue<ICellCoordinate> queue = new LinkedList<ICellCoordinate>();
+        List<ICellCoordinate> neighborCellCoordinates = this.dependencyManager
+                .getDependantCells(originalCellCoordinate);
+
+        for (ICellCoordinate neighbor : neighborCellCoordinates) {
+            if (!visitedCells.containsKey(neighbor)) {
+                visitedCells.put(neighbor, true);
+                queue.add(neighbor);
+            }
+        }
+        while (queue.size() != 0) {
+            ICellCoordinate top = queue.poll();
+
+            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
             Optional<Double> value;
             try {
@@ -111,7 +134,16 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                 value = Optional.empty();
             }
             cellContent.setValue(value);
-            this.updateDependantCells(cellCoordinate);
+
+            neighborCellCoordinates = this.dependencyManager.getDependantCells(top);
+
+            for (ICellCoordinate neighbor : neighborCellCoordinates) {
+                if (!visitedCells.containsKey(neighbor)) {
+                    visitedCells.put(neighbor, true);
+                    queue.add(neighbor);
+                }
+            }
+
         }
     }
 

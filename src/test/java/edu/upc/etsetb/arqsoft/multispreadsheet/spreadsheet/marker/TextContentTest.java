@@ -45,7 +45,7 @@ public class TextContentTest extends SuperClassForTests {
         if (numInstances == 1) {
             numErrorsBefore = SuperClassForTests.indErrors.size();
         }
-        TextContentTest.indErrors = SuperClassForTests.indErrors;
+        TextContentTest.indErrors = (List<AssertionError>) SuperClassForTests.indErrors;
         this.instance = ISpreadsheetFactoryForChecker
                 .createSpreadsheetControllerForChecker(AMultiSpreadsheetFactory.getInstance("spreadsheet"),
                         AMultiCellContentFactory.getInstance("default")

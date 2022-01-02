@@ -15,10 +15,10 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-        // TextContentTest.class,
-        // NumberContentTest.class,
-        // FormulaContentTest.class,
-        // DependentCellsTest.class,
+        TextContentTest.class,
+        NumberContentTest.class,
+        FormulaContentTest.class,
+        DependentCellsTest.class,
         CircularDependenciesTest.class
 })
 public class TestSuite {

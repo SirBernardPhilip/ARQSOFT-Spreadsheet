@@ -176,7 +176,6 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      * 
      * @param cellCoordString
      * @param cellContentString
-     * @throws MultiSpreadsheetException
      */
     public void editCell(String cellCoordString, String cellContentString) {
         Optional<ICellCoordinate> cellCoord = Optional.empty();
@@ -235,6 +234,5 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
 
         }
-
     }
 }

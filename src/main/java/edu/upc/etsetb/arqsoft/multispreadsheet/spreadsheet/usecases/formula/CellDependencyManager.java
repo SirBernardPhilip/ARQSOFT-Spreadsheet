@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
@@ -20,7 +21,7 @@ public class CellDependencyManager implements ICellDependencyManager {
     }
 
     @Override
-    public void reset(){
+    public void reset() {
         this.cellDependencies = new HashMap<ICellCoordinate, List<ICellCoordinate>>();
     }
 
@@ -57,25 +58,38 @@ public class CellDependencyManager implements ICellDependencyManager {
         }
     }
 
-    private boolean auxFindCircularReferences(ICellCoordinate goal, ICellCoordinate initial) {
-        if (this.cellDependencies.containsKey(initial)) {
-            Boolean returnBoolean = false;
-            for (ICellCoordinate cellCoordinate : this.cellDependencies.get(initial)) {
-                if (cellCoordinate == goal) {
-                    return true;
-                } else {
-                    returnBoolean = returnBoolean || auxFindCircularReferences(goal, cellCoordinate);
-                }
-            }
-            return returnBoolean;
-        } else {
-            return false;
-        }
-    }
-
     @Override
     public boolean findCircularReferences(ICellCoordinate cellCoordinate) {
-        return auxFindCircularReferences(cellCoordinate, cellCoordinate);
+        Map<ICellCoordinate, Boolean> visitedCells = new HashMap<ICellCoordinate, Boolean>();
+        visitedCells.put(cellCoordinate, true);
+
+        Queue<ICellCoordinate> queue = new LinkedList<ICellCoordinate>();
+        List<ICellCoordinate> neighborCellCoordinates = this.getDependantCells(cellCoordinate);
+
+        for (ICellCoordinate neighbor : neighborCellCoordinates) {
+            if (!visitedCells.containsKey(neighbor)) {
+                visitedCells.put(neighbor, true);
+                queue.add(neighbor);
+            } else {
+                return true;
+            }
+        }
+        while (queue.size() != 0) {
+            ICellCoordinate top = queue.poll();
+
+            neighborCellCoordinates = this.getDependantCells(top);
+
+            for (ICellCoordinate neighbor : neighborCellCoordinates) {
+                if (!visitedCells.containsKey(neighbor)) {
+                    visitedCells.put(neighbor, true);
+                    queue.add(neighbor);
+                } else {
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 
 }
