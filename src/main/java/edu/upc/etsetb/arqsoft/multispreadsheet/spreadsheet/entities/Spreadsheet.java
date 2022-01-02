@@ -115,7 +115,7 @@ public class Spreadsheet implements ISpreadsheet {
 
         Set<ICellCoordinate> allCoordinates = this.cells.keySet();
         if (allCoordinates.size() == 0) {
-            return spreadsheetFactory.getCellCoordinate(1, "A");
+            return spreadsheetFactory.getCellCoordinate(1, 1);
         }
         List<Integer> rows = allCoordinates.stream().map(c -> {
             return c.getRow();
@@ -131,7 +131,7 @@ public class Spreadsheet implements ISpreadsheet {
         Integer maxRow = Collections.max(rows);
         Integer maxColumn = Collections.max(columns);
 
-        return spreadsheetFactory.getCellCoordinate(maxRow, CellCoordinate.getColumnName(maxColumn));
+        return spreadsheetFactory.getCellCoordinate(maxRow, maxColumn);
     }
 
     /**

@@ -8,27 +8,17 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAcce
 
 public interface ISpreadsheetExporter {
 
-    /**
-     * Method that gets all the contents of a spreadsheet into a matrix
-     * 
-     * @param spreadsheet
-     * @return String[][]
-     * @throws MultiSpreadsheetException
-     */
-    public String[][] getAllContentsMatrix(ISpreadsheet spreadsheet)
-            throws MultiSpreadsheetException;
-
-    /**
-     * 
-     * Method that exports a spreadsheet into a file
-     * 
-     * @param spreadsheet
-     * @param savePath
-     * @throws NoWriteAccessException
-     * @throws IOException
-     * @throws MultiSpreadsheetException
-     */
-    public void exportSpreadsheet(ISpreadsheet spreadsheet, String savePath)
-            throws NoWriteAccessException,
-            IOException, MultiSpreadsheetException;
+        /**
+         * 
+         * Method that exports a spreadsheet into a file
+         * 
+         * @param spreadsheet
+         * @param savePath
+         * @throws NoWriteAccessException
+         * @throws IOException
+         * @throws MultiSpreadsheetException
+         */
+        public void exportSpreadsheet(ISpreadsheet spreadsheet, String savePath)
+                        throws NoWriteAccessException,
+                        IOException, MultiSpreadsheetException;
 }

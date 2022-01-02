@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Map.Entry;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoReadAccessException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
@@ -124,9 +126,45 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      */
     public void loadSpreadsheet(String loadPath) {
         this.optionallySaveCurrent();
+        Optional<Map<ICellCoordinate, String>> contentMap = Optional.empty();
+        try {
+            contentMap = Optional.of(this.spreadsheetImporter.importSpreadsheet(loadPath));
+        } catch (MultiSpreadsheetException | IOException | NoReadAccessException e) {
+            System.out.println(
+                    String.format("The program could not read from %s. Make sure it is correct.", loadPath));
+        }
+        if (contentMap.isPresent()) {
+            this.spreadsheet = this.spreadsheetFactory.getSpreadsheet(this.spreadsheetFactory);
+            this.dependencyManager.reset();
+            // Set all the contents that and generate formulas
+            for (Entry<ICellCoordinate, String> entry : contentMap.get().entrySet()) {
+                ICellContent cellContent = this.spreadsheetFactory.getCellContent(entry.getValue(),
+                        this.cellContentFactory);
+                if (cellContent instanceof FormulaContent) {
+                    this.expressionGenerator.reset();
+                    this.expressionEvaluator.reset();
+                    Optional<List<IFormulaElement>> elements;
 
-        throw new UnsupportedOperationException("SpreadsheetController::loadSpreadsheet. Not implemented yet");
-        // System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
+                    try {
+                        this.expressionGenerator.generate(entry.getValue().substring(1).replaceAll("\\s+", ""));
+                        elements = Optional.of(this.expressionGenerator.getElements());
+                        List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
+                        for (IFormulaElement element : elements.get()) {
+                            if (element instanceof FormulaCellReference) {
+                                cellCoordinates.add(((FormulaCellReference) element).getCellCoordinate());
+                            }
+                        }
+                        this.dependencyManager.addDependantCell(entry.getKey(), cellCoordinates);
+                    } catch (MultiSpreadsheetException e) {
+                        elements = Optional.empty();
+                    }
+
+                }
+                this.spreadsheet.setCellContent(entry.getKey(), cellContent);
+            }
+
+            System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
+        }
     }
 
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {

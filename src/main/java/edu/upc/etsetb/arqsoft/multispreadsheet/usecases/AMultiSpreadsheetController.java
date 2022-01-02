@@ -2,6 +2,7 @@ package edu.upc.etsetb.arqsoft.multispreadsheet.usecases;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
+import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetImporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetPrinter;
 
 public abstract class AMultiSpreadsheetController {
@@ -9,6 +10,7 @@ public abstract class AMultiSpreadsheetController {
     protected ISpreadsheet spreadsheet;
     protected ISpreadsheetPrinter spreadsheetPrinter;
     protected ISpreadsheetExporter spreadsheetExporter;
+    protected ISpreadsheetImporter spreadsheetImporter;
     protected AMultiSpreadsheetFactory spreadsheetFactory;
     protected AMultiCellContentFactory cellContentFactory;
 
@@ -19,6 +21,7 @@ public abstract class AMultiSpreadsheetController {
         this.spreadsheet = spreadsheetFactory.getSpreadsheet(spreadsheetFactory);
         this.spreadsheetPrinter = spreadsheetFactory.getSpreadsheetPrinter(spreadsheetFactory);
         this.spreadsheetExporter = spreadsheetFactory.getSpreadsheetExporter(spreadsheetFactory);
+        this.spreadsheetImporter = spreadsheetFactory.getSpreadsheetImporter(spreadsheetFactory);
     }
 
     public ISpreadsheet getSpreadsheet() {

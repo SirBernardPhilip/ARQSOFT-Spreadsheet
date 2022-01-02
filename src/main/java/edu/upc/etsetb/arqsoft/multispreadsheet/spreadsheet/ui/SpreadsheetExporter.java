@@ -8,7 +8,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.FileSystemUtils;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.CellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
@@ -31,8 +30,7 @@ public class SpreadsheetExporter implements ISpreadsheetExporter {
      * @return String[][]
      * @throws MultiSpreadsheetException
      */
-    @Override
-    public String[][] getAllContentsMatrix(ISpreadsheet spreadsheet)
+    private String[][] getAllContentsMatrix(ISpreadsheet spreadsheet)
             throws MultiSpreadsheetException {
         ICellCoordinate borderCoordinate = spreadsheet.getBorderCoordinate();
         Integer borderRow = borderCoordinate.getRow();
@@ -41,8 +39,7 @@ public class SpreadsheetExporter implements ISpreadsheetExporter {
 
         for (int i = 1; i < borderRow + 1; ++i) {
             for (int j = 1; j < borderCol + 1; ++j) {
-                ICellCoordinate cellCoordinate = this.spreadsheetFactory.getCellCoordinate(i,
-                        CellCoordinate.getColumnName(j));
+                ICellCoordinate cellCoordinate = this.spreadsheetFactory.getCellCoordinate(i, j);
                 contentTable[i - 1][j - 1] = spreadsheet.getCellContent(cellCoordinate);
             }
         }
@@ -64,7 +61,7 @@ public class SpreadsheetExporter implements ISpreadsheetExporter {
     public void exportSpreadsheet(ISpreadsheet spreadsheet, String savePath)
             throws NoWriteAccessException,
             IOException, MultiSpreadsheetException {
-        File file = FileSystemUtils.ensurePath(savePath);
+        File file = FileSystemUtils.ensurePathWrite(savePath);
         String cellContents[][] = this.getAllContentsMatrix(spreadsheet);
         StringBuilder exportString = new StringBuilder();
         for (int i = 0; i < cellContents.length; ++i) {

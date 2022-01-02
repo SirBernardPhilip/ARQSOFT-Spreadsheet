@@ -9,6 +9,7 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsh
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.SpreadsheetFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.AUserInterface;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
+import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetImporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetPrinter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.exceptions.InvalidSpreadsheetTypeException;
 
@@ -37,7 +38,7 @@ public abstract class AMultiSpreadsheetFactory {
         public abstract ICellCoordinateRange getCellCoordinateRange(ICellCoordinate topLeft, ICellCoordinate botRight)
                         throws MultiSpreadsheetException;
 
-        public abstract ICellCoordinate getCellCoordinate(Integer row, String column) throws MultiSpreadsheetException;
+        public abstract ICellCoordinate getCellCoordinate(Integer row, Integer column) throws MultiSpreadsheetException;
 
         public abstract ICellCoordinate getCellCoordinate(String cellCoordinateString) throws MultiSpreadsheetException;
 
@@ -47,4 +48,5 @@ public abstract class AMultiSpreadsheetFactory {
 
         public abstract ISpreadsheetPrinter getSpreadsheetPrinter(AMultiSpreadsheetFactory spreadsheetFactory);
 
+        public abstract ISpreadsheetImporter getSpreadsheetImporter(AMultiSpreadsheetFactory spreadsheetFactory);
 }

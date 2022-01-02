@@ -11,8 +11,10 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.Spreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidNumberCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.exceptions.InvalidStringCoordinatesException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.SpreadsheetExporter;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.SpreadsheetImporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.SpreadsheetPrinter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.ui.UserInterface;
+import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetImporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetFactory;
 
@@ -41,9 +43,9 @@ public class SpreadsheetFactory extends AMultiSpreadsheetFactory {
     }
 
     @Override
-    public CellCoordinate getCellCoordinate(Integer row, String column)
+    public CellCoordinate getCellCoordinate(Integer row, Integer column)
             throws InvalidStringCoordinatesException, InvalidNumberCoordinatesException {
-        return CellCoordinate.getInstance(row, column);
+        return CellCoordinate.getInstance(row, CellCoordinate.getColumnName(column));
 
     }
 
@@ -73,6 +75,11 @@ public class SpreadsheetFactory extends AMultiSpreadsheetFactory {
     public ICellContent getCellContent(String cellContentString, AMultiCellContentFactory cellContentFactory) {
         return cellContentFactory.getCellContent(cellContentString);
 
+    }
+
+    @Override
+    public ISpreadsheetImporter getSpreadsheetImporter(AMultiSpreadsheetFactory spreadsheetFactory) {
+        return SpreadsheetImporter.getInstance(spreadsheetFactory);
     }
 
 }

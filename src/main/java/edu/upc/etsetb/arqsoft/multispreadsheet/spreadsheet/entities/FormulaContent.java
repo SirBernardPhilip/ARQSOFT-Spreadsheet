@@ -1,5 +1,6 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,8 @@ public class FormulaContent extends ACellContent {
      */
     private FormulaContent(String content) {
         super(content);
+        this.value = Optional.empty();
+        this.elements = new LinkedList<IFormulaElement>();
     }
 
     /**

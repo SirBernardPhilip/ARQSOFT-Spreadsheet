@@ -26,8 +26,7 @@ public class SpreadsheetPrinter implements ISpreadsheetPrinter {
      * @return String[][]
      * @throws MultiSpreadsheetException
      */
-    @Override
-    public String[][] getAllValuesMatrix(ISpreadsheet spreadsheet)
+    private String[][] getAllValuesMatrix(ISpreadsheet spreadsheet)
             throws MultiSpreadsheetException {
         ICellCoordinate borderCoordinate = spreadsheet.getBorderCoordinate();
         Integer borderRow = borderCoordinate.getRow();
@@ -39,7 +38,7 @@ public class SpreadsheetPrinter implements ISpreadsheetPrinter {
             for (int j = 1; j < borderCol + 1; ++j) {
                 String columnName = CellCoordinate.getColumnName(j);
                 contentTable[0][j] = columnName;
-                ICellCoordinate cellCoordinate = this.spreadsheetFactory.getCellCoordinate(i, columnName);
+                ICellCoordinate cellCoordinate = this.spreadsheetFactory.getCellCoordinate(i, j);
                 contentTable[i][j] = spreadsheet.getCellStringValue(cellCoordinate);
             }
         }
