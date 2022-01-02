@@ -196,7 +196,7 @@ public class DependentCellsTest extends SuperClassForTests {
                         this.printlnAlways("\n\tCase 1: modifying one cell whose reference is "
                                         + "one of the arguments of a function in another cell: " + valorTotal * 0.5);
                         double content = this.instance.getCellContentAsDouble("B2");
-                        error = this.sAssertEquals(13, content, 0.00001, 0, "The cell "
+                        error = this.sAssertEquals(13, content, 0.00001, valorTotal * 0.25, "The cell "
                                         + "should contain the number: 13 -result of formula =1+SUMA(A3;A4;A5), when "
                                         + "A3=3, A4=4 , and A5=5- with a margin of 0.00001. "
                                         + "Instead, it contains the value " + content);
@@ -260,7 +260,7 @@ public class DependentCellsTest extends SuperClassForTests {
                                         + "the range that is one of the arguments of a function in another cell: "
                                         + valorTotal * 0.5);
                         double content = this.instance.getCellContentAsDouble("C1");
-                        error = this.sAssertEquals(42, content, 0.00001, 0, "The cell "
+                        error = this.sAssertEquals(42, content, 0.00001, valorTotal * 0.25, "The cell "
                                         + "should contain the number: 42 -result of formula =2+SUMA(A6:A10), when "
                                         + "A6=6, A7=7, A8=8, A9=9, and A10=10- with a margin of 0.00001. "
                                         + "Instead, it contains the value " + content);

@@ -19,7 +19,7 @@ import org.junit.runners.Suite.SuiteClasses;
         // NumberContentTest.class,
         // FormulaContentTest.class,
         // DependentCellsTest.class,
-CircularDependenciesTest.class
+        CircularDependenciesTest.class
 })
 public class TestSuite {
 

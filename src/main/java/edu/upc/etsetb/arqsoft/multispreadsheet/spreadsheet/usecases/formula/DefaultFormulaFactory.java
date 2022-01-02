@@ -25,11 +25,14 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.toke
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaCellReference;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaDivideOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaFunctionArgumentSeparator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaMaxFunction;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaMinFunction;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaMultiplyOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaNumeric;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaPromedioFunction;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSubtractOperator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSumOperator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaSumaFunction;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.PostfixEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.PostfixEvaluatorVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.postfix.SpreadsheetPostfixGenerator;
@@ -98,6 +101,7 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
                 if (!first) {
                     elements.add(FormulaFunctionArgumentSeparator.getInstance());
                 }
+                first = false;
             }
             return elements;
         } else if (token.isSemicolon()) {
@@ -127,11 +131,11 @@ public class DefaultFormulaFactory implements ISpreadsheetFormulaFactory {
             case "PROMEDIO":
                 return FormulaPromedioFunction.getInstance();
             case "SUMA":
-                return FormulaPromedioFunction.getInstance();
+                return FormulaSumaFunction.getInstance();
             case "MIN":
-                return FormulaPromedioFunction.getInstance();
+                return FormulaMinFunction.getInstance();
             case "MAX":
-                return FormulaPromedioFunction.getInstance();
+                return FormulaMaxFunction.getInstance();
             default:
                 throw new UnexpectedTokenException(token.getTokenString());
         }
