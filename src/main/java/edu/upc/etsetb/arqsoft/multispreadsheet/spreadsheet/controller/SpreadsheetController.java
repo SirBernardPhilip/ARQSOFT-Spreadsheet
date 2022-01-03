@@ -172,6 +172,23 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                 this.spreadsheet.setCellContent(entry.getKey(), cellContent);
             }
             // FORMULAS
+            for (ICellCoordinate formulaCoord : uncalculatedFormulaCoordinates) {
+                FormulaContent formulaContent = (FormulaContent) this.spreadsheet.getCell(formulaCoord).get()
+                        .getContentClass();
+                if (!this.dependencyManager.findCircularReferences(formulaCoord)) {
+                    try {
+                        formulaContent
+                                .setValue(this.expressionEvaluator.evaluate(formulaContent.getElements(),
+                                        this.spreadsheet));
+
+                    } catch (MultiSpreadsheetException | NumberFormatException e) {
+                        formulaContent.setError("Eval. Err.");
+                    }
+                } else {
+                    formulaContent.setError("Circ. Ref. Err.");
+                }
+
+            }
             System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
         }
     }
@@ -268,7 +285,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                             formulaContent.setError("Eval. Err.");
                         }
                     } else {
-                        System.out.println("Circ. Ref. Err.");
+                        formulaContent.setError("Circ. Ref. Err.");
+
+                        System.out.println("A circular reference was found");
                     }
                 }
 
