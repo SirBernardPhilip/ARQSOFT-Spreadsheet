@@ -171,23 +171,35 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                 }
                 this.spreadsheet.setCellContent(entry.getKey(), cellContent);
             }
-            // FORMULAS
-            for (ICellCoordinate formulaCoord : uncalculatedFormulaCoordinates) {
-                FormulaContent formulaContent = (FormulaContent) this.spreadsheet.getCell(formulaCoord).get()
-                        .getContentClass();
-                if (!this.dependencyManager.findCircularReferences(formulaCoord)) {
-                    try {
-                        formulaContent
-                                .setValue(this.expressionEvaluator.evaluate(formulaContent.getElements(),
-                                        this.spreadsheet));
-
-                    } catch (MultiSpreadsheetException | NumberFormatException e) {
-                        formulaContent.setError("Eval. Err.");
+            while (uncalculatedFormulaCoordinates.size() != 0) {
+                for (ICellCoordinate formulaCoord : uncalculatedFormulaCoordinates) {
+                    FormulaContent formulaContent = (FormulaContent) this.spreadsheet.getCell(formulaCoord).get()
+                            .getContentClass();
+                    if (!this.dependencyManager.findCircularReferences(formulaCoord)) {
+                        List<ICellCoordinate> dependantCells = this.dependencyManager.getDependantCells(formulaCoord);
+                        Boolean allDependantsComputed = true;
+                        for (ICellCoordinate dependantCell : dependantCells) {
+                            ICellContent cellContent = this.spreadsheet.getCell(dependantCell).get().getContentClass();
+                            if ((cellContent instanceof FormulaContent) && ((FormulaContent) cellContent).isUnset()) {
+                                allDependantsComputed = false;
+                            }
+                        }
+                        if (allDependantsComputed) {
+                            uncalculatedFormulaCoordinates.remove(formulaCoord);
+                            try {
+                                formulaContent
+                                        .setValue(this.expressionEvaluator.evaluate(formulaContent.getElements(),
+                                                this.spreadsheet));
+                            } catch (MultiSpreadsheetException | NumberFormatException e) {
+                                formulaContent.setError("Eval. Err.");
+                            }
+                        }
+                    } else {
+                        uncalculatedFormulaCoordinates.remove(formulaCoord);
+                        formulaContent.setError("Circ. Ref. Err.");
                     }
-                } else {
-                    formulaContent.setError("Circ. Ref. Err.");
-                }
 
+                }
             }
             System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
         }
