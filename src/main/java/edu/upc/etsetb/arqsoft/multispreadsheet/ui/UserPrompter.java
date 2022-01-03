@@ -4,22 +4,33 @@ import java.util.Scanner;
 
 public class UserPrompter {
 
+    private Scanner scanner;
+
+    private UserPrompter() {
+    }
+
+    public static UserPrompter getInstance() {
+        return new UserPrompter();
+    }
+
+    public void setScanner(Scanner scanner) {
+        this.scanner = scanner;
+    }
+
     /**
      * Methods that asks the user a yes or no question
      * 
      * @param prompt
      * @return boolean
      */
-    public static boolean promptYesOrNo(String prompt) {
-        // FIXME: Should I use the scanner we already have in UserInterface?
-        Scanner scanner = new Scanner(System.in);
+    public boolean promptYesOrNo(String prompt) {
         String yesOrNo = null;
         boolean validInput = false;
         while (!validInput) {
             System.out.println(prompt);
             System.out.println("[Y/y] or [N/n]");
 
-            yesOrNo = scanner.nextLine();
+            yesOrNo = this.scanner.nextLine();
             validInput = yesOrNo.toUpperCase().equals("Y")
                     || yesOrNo.toUpperCase().equals("N");
             if (!validInput) {
@@ -37,11 +48,9 @@ public class UserPrompter {
      * @param prompt
      * @return String
      */
-    public static String promptInfo(String prompt) {
-        // FIXME: Should I use the scanner we already have in UserInterface?
-        Scanner scanner = new Scanner(System.in);
+    public String promptInfo(String prompt) {
         System.out.println(prompt);
-        String info = scanner.nextLine();
+        String info = this.scanner.nextLine();
         // scanner.close();
         return info;
 

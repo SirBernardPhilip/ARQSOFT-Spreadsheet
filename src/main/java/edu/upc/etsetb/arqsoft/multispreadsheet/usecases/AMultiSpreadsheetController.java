@@ -1,5 +1,7 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.usecases;
 
+import java.util.Scanner;
+
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetImporter;
@@ -27,6 +29,8 @@ public abstract class AMultiSpreadsheetController {
     public ISpreadsheet getSpreadsheet() {
         return this.spreadsheet;
     }
+
+    public abstract void setScanner(Scanner scanner);
 
     /**
      * Method that calls the appropiate method in the domain to create a new

@@ -15,6 +15,8 @@ public class FormulaContent extends ACellContent {
      */
     private Optional<Double> value;
 
+    private Optional<String> error;
+
     private List<IFormulaElement> elements;
 
     /**
@@ -25,6 +27,7 @@ public class FormulaContent extends ACellContent {
     private FormulaContent(String content) {
         super(content);
         this.value = Optional.empty();
+        this.error = Optional.of("Uncomputed value");
         this.elements = new LinkedList<IFormulaElement>();
     }
 
@@ -48,15 +51,24 @@ public class FormulaContent extends ACellContent {
         return this.elements;
     }
 
+    public Boolean isUnset() {
+        return !this.error.isPresent() && !this.value.isPresent();
+    }
+
     /**
      * Parse the content to the corresponding value
      * 
      * @param content
      * @throws MultiSpreadsheetException
      */
-    public void setValue(Optional<Double> value) {
-        this.value = value;
+    public void setValue(Double value) {
+        this.value = Optional.of(value);
+        this.error = Optional.empty();
+    }
 
+    public void setError(String error) {
+        this.value = Optional.empty();
+        this.error = Optional.of(error);
     }
 
     /**
@@ -87,7 +99,7 @@ public class FormulaContent extends ACellContent {
             return String.valueOf(this.value.get());
 
         } else {
-            return "Err";
+            return this.error.get();
         }
     }
 }

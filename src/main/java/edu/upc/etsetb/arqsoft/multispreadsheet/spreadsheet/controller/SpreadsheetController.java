@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.Map.Entry;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
@@ -35,6 +36,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
     private ISpreadsheetExpressionGenerator expressionGenerator;
     private IExpressionEvaluator expressionEvaluator;
     private ICellDependencyManager dependencyManager;
+    private UserPrompter userPrompter;
 
     protected SpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
@@ -43,7 +45,12 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         this.expressionGenerator = formulaFactory.getSpreadsheetExpressionGenerator(formulaFactory);
         this.expressionEvaluator = formulaFactory.getExpressionEvaluator(formulaFactory);
         this.dependencyManager = formulaFactory.getDependencyManager();
+        userPrompter = UserPrompter.getInstance();
 
+    }
+
+    public void setScanner(Scanner scanner) {
+        this.userPrompter.setScanner(scanner);
     }
 
     /**
@@ -64,10 +71,10 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
      */
     private void optionallySaveCurrent() {
         if (!spreadsheet.isEmpty()) {
-            boolean save = UserPrompter
+            boolean save = this.userPrompter
                     .promptYesOrNo("There already is a spreadsheet present, do you wish to save it?");
             if (save) {
-                String savePath = UserPrompter.promptInfo("Input the path to save the current spreadsheet:");
+                String savePath = this.userPrompter.promptInfo("Input the path to save the current spreadsheet:");
                 this.saveSpreadsheet(savePath);
             }
         }
@@ -136,15 +143,16 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         if (contentMap.isPresent()) {
             this.spreadsheet = this.spreadsheetFactory.getSpreadsheet(this.spreadsheetFactory);
             this.dependencyManager.reset();
+            List<ICellCoordinate> uncalculatedFormulaCoordinates = new LinkedList<ICellCoordinate>();
             // Set all the contents that and generate formulas
             for (Entry<ICellCoordinate, String> entry : contentMap.get().entrySet()) {
                 ICellContent cellContent = this.spreadsheetFactory.getCellContent(entry.getValue(),
                         this.cellContentFactory);
                 if (cellContent instanceof FormulaContent) {
+                    FormulaContent formulaContent = (FormulaContent) cellContent;
                     this.expressionGenerator.reset();
                     this.expressionEvaluator.reset();
                     Optional<List<IFormulaElement>> elements;
-
                     try {
                         this.expressionGenerator.generate(entry.getValue().substring(1).replaceAll("\\s+", ""));
                         elements = Optional.of(this.expressionGenerator.getElements());
@@ -155,14 +163,15 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                             }
                         }
                         this.dependencyManager.addDependantCell(entry.getKey(), cellCoordinates);
+                        formulaContent.setElements(elements.get());
+                        uncalculatedFormulaCoordinates.add(entry.getKey());
                     } catch (MultiSpreadsheetException e) {
-                        elements = Optional.empty();
+                        formulaContent.setError("Expr. Err.");
                     }
-
                 }
                 this.spreadsheet.setCellContent(entry.getKey(), cellContent);
             }
-
+            // FORMULAS
             System.out.println(String.format("Spreadsheet loaded from %s", loadPath));
         }
     }
@@ -186,15 +195,13 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
             FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
-            Optional<Double> value;
             try {
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
-                value = Optional.of(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+                cellContent.setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+
             } catch (MultiSpreadsheetException | NumberFormatException e) {
-                value = Optional.empty();
             }
-            cellContent.setValue(value);
 
             neighborCellCoordinates = this.dependencyManager.getDependantCells(top);
 
@@ -229,6 +236,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     this.cellContentFactory);
 
             if (cellContent instanceof FormulaContent) {
+                FormulaContent formulaContent = (FormulaContent) cellContent;
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
                 Optional<List<IFormulaElement>> elements;
@@ -245,25 +253,23 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
                 } catch (MultiSpreadsheetException e) {
                     elements = Optional.empty();
+                    formulaContent.setError("Expr. Err.");
                 }
 
                 if (elements.isPresent()) {
-                    ((FormulaContent) cellContent).setElements(elements.get());
-
-                    Optional<Double> value;
+                    formulaContent.setElements(elements.get());
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
                         try {
-                            value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+                            formulaContent
+                                    .setValue(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+
                         } catch (MultiSpreadsheetException | NumberFormatException e) {
-                            value = Optional.empty();
+                            formulaContent.setError("Eval. Err.");
                         }
                     } else {
-                        System.out.println("There was a circular reference.");
-                        value = Optional.empty();
+                        System.out.println("Circ. Ref. Err.");
                     }
-
-                    ((FormulaContent) cellContent).setValue(value);
                 }
 
             }

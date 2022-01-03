@@ -92,6 +92,7 @@ public class UserInterface extends AUserInterface {
                 }
                 String filePath = parsedLine[1];
                 this.scan = new Scanner(new FileInputStream(filePath));
+                this.spreadsheetController.setScanner(scan);
                 return true;
             case "C":
                 spreadsheetController.createSpreadsheet();

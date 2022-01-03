@@ -22,6 +22,7 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpr
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.CircularDependencyException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 
 public class SpreadsheetControllerForChecker implements ISpreadsheetControllerForChecker {
@@ -65,11 +66,17 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                     this.cellContentFactory);
 
             if (cellContent instanceof FormulaContent) {
+                FormulaContent formulaContent = (FormulaContent) cellContent;
+
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
                 Optional<List<IFormulaElement>> elements;
-
-                this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
+                try {
+                    this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
+                } catch (SpreadsheetFormulaException e) {
+                    formulaContent.setError("Expr. Err.");
+                    throw e;
+                }
                 elements = Optional.of(this.expressionGenerator.getElements());
                 List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
                 for (IFormulaElement element : elements.get()) {
@@ -80,19 +87,23 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                 this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
 
                 if (elements.isPresent()) {
-                    ((FormulaContent) cellContent).setElements(elements.get());
-
-                    Optional<Double> value;
+                    formulaContent.setElements(elements.get());
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
-                        value = Optional.of(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+                        try {
+                            formulaContent
+                                    .setValue(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
+                        } catch (MultiSpreadsheetException e) {
+                            formulaContent.setError("Eval. Err.");
+                            throw e;
+                        }
+
                     } else {
+                        formulaContent.setError("Eval. Err.");
                         foundCircular = true;
                         System.out.println("There was a circular reference.");
-                        value = Optional.empty();
                     }
 
-                    ((FormulaContent) cellContent).setValue(value);
                 }
 
             }
@@ -125,15 +136,12 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
 
             FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
-            Optional<Double> value;
             try {
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
-                value = Optional.of(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+                cellContent.setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
             } catch (MultiSpreadsheetException | NumberFormatException e) {
-                value = Optional.empty();
             }
-            cellContent.setValue(value);
 
             neighborCellCoordinates = this.dependencyManager.getDependantCells(top);
 
