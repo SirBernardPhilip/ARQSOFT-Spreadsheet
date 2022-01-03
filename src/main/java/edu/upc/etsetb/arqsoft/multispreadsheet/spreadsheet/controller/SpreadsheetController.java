@@ -224,12 +224,18 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
             FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
-            try {
-                this.expressionGenerator.reset();
-                this.expressionEvaluator.reset();
-                cellContent.setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+            if (this.dependencyManager.findCircularReferences(top)) {
+                cellContent.setError("Circ. Ref. Err.");
+            } else {
+                try {
+                    this.expressionGenerator.reset();
+                    this.expressionEvaluator.reset();
+                    cellContent
+                            .setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
 
-            } catch (MultiSpreadsheetException | NumberFormatException e) {
+                } catch (MultiSpreadsheetException | NumberFormatException e) {
+                    cellContent.setError("Eval. Err.");
+                }
             }
 
             neighborCellCoordinates = this.dependencyManager.getDependantCells(top);

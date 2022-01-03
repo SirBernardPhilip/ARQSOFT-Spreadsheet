@@ -54,7 +54,6 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
     public void setCellContent(String cellCoordString, String cellContentString)
             throws MultiSpreadsheetException {
 
-        Boolean foundCircular = false;
         Optional<ICellCoordinate> cellCoord = Optional.empty();
 
         cellCoord = Optional.of(this.spreadsheetFactory.getCellCoordinate(cellCoordString));
@@ -75,6 +74,8 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                     this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
                 } catch (SpreadsheetFormulaException e) {
                     formulaContent.setError("Expr. Err.");
+                    this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
+                    this.updateDependantCells(cellCoord.get());
                     throw e;
                 }
                 elements = Optional.of(this.expressionGenerator.getElements());
@@ -95,13 +96,17 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                                     .setValue(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
                         } catch (MultiSpreadsheetException e) {
                             formulaContent.setError("Eval. Err.");
+                            this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
+                            this.updateDependantCells(cellCoord.get());
                             throw e;
                         }
 
                     } else {
-                        formulaContent.setError("Eval. Err.");
-                        foundCircular = true;
+                        formulaContent.setError("Circ. Ref. Err.");
+                        this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
+                        this.updateDependantCells(cellCoord.get());
                         System.out.println("There was a circular reference.");
+                        throw new CircularDependencyException();
                     }
 
                 }
@@ -110,10 +115,6 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
             this.updateDependantCells(cellCoord.get());
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
-            if (foundCircular) {
-                throw new CircularDependencyException();
-            }
-
         }
     }
 
@@ -136,11 +137,18 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
 
             FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
                     .getContentClass();
-            try {
-                this.expressionGenerator.reset();
-                this.expressionEvaluator.reset();
-                cellContent.setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
-            } catch (MultiSpreadsheetException | NumberFormatException e) {
+            if (this.dependencyManager.findCircularReferences(top)) {
+                cellContent.setError("Circ. Ref. Err.");
+            } else {
+                try {
+                    this.expressionGenerator.reset();
+                    this.expressionEvaluator.reset();
+                    cellContent
+                            .setValue(this.expressionEvaluator.evaluate(cellContent.getElements(), this.spreadsheet));
+
+                } catch (MultiSpreadsheetException | NumberFormatException e) {
+                    cellContent.setError("Eval. Err.");
+                }
             }
 
             neighborCellCoordinates = this.dependencyManager.getDependantCells(top);
