@@ -220,6 +220,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
     /**
      * Update the cells that depend on the given cell.
+     * 
      * @param originalCellCoordinate
      */
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
@@ -331,6 +332,25 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             this.updateDependantCells(cellCoord.get());
             System.out.println(String.format("Cell %s edited with content %s", cellCoordString, cellContentString));
 
+        }
+    }
+
+    @Override
+    public void viewCellContent(String cellCoordString) {
+        Optional<ICellCoordinate> cellCoord = Optional.empty();
+        try {
+            cellCoord = Optional.of(this.spreadsheetFactory.getCellCoordinate(cellCoordString));
+        } catch (MultiSpreadsheetException e) {
+            System.out.println("Invalid coordinate.");
+        }
+        if (cellCoord.isPresent()) {
+            System.out.print(cellCoordString + ": ");
+            String content = this.spreadsheet.getCellContent(cellCoord.get());
+            if (content.equals("")) {
+                System.out.println("<Empty>");
+            } else {
+                System.out.println(this.spreadsheet.getCellContent(cellCoord.get()));
+            }
         }
     }
 }

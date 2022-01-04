@@ -41,12 +41,13 @@ public class UserInterface extends AUserInterface {
     public boolean readCommand() {
         System.out.println();
         System.out.println("Available commands:");
-        System.out.println("(RF) <TXT path>             -- Read commands from file");
-        System.out.println("(C)                         -- Create a new spreadsheet");
-        System.out.println("(E) <coord> <content>       -- Edit a cell");
-        System.out.println("(L) <S2V path>              -- Load a spreadsheet from a file");
-        System.out.println("(S) <S2V path>              -- Save the spreadsheet to a file");
-        System.out.println("(X)                         -- Exit the program");
+        System.out.println("RF <TXT path>             -- Read commands from file");
+        System.out.println("C                         -- Create a new spreadsheet");
+        System.out.println("E  <coord> <content>      -- Edit a cell");
+        System.out.println("V  <coord>                -- View the content of a cell");
+        System.out.println("L  <S2V path>             -- Load a spreadsheet from a file");
+        System.out.println("S  <S2V path>             -- Save the spreadsheet to a file");
+        System.out.println("X                         -- Exit the program");
         System.out.println();
         if (this.scan.hasNextLine()) {
             String line = this.scan.nextLine();
@@ -106,6 +107,13 @@ public class UserInterface extends AUserInterface {
                 spreadsheetController.editCell(parsedLine[1], parsedLine[2]);
                 spreadsheetController.viewSpreadsheet();
                 return true;
+            case "V":
+                if (parsedLine.length < 2) {
+                    throw new MissingArgumentException(1, parsedLine.length - 1);
+                }
+                spreadsheetController.viewCellContent(parsedLine[1]);
+                spreadsheetController.viewSpreadsheet();
+                return true;
             case "L":
                 if (parsedLine.length < 2) {
                     throw new MissingArgumentException(1, parsedLine.length - 1);
@@ -126,5 +134,4 @@ public class UserInterface extends AUserInterface {
                 throw new InvalidCommandException(line);
         }
     }
-
 }

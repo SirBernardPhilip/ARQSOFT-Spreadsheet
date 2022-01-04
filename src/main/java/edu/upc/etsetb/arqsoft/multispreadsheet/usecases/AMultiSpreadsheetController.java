@@ -81,4 +81,12 @@ public abstract class AMultiSpreadsheetController {
      * @param cellContent
      */
     public abstract void editCell(String cellCoord, String cellContent);
+
+    /**
+     * Method that calls the appropiate method in the domain to print the
+     * content of a cell.
+     * 
+     * @param cellCoord
+     */
+    public abstract void viewCellContent(String cellCoord);
 }
