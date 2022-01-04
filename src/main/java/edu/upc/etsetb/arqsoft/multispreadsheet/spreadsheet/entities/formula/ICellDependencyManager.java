@@ -12,7 +12,19 @@ public interface ICellDependencyManager {
 
     public boolean findCircularReferences(ICellCoordinate cellCoordinate);
 
+    /**
+     * Get the cells that depend on the given coordinate
+     * @param cellCoordinate
+     * @return
+     */
     public List<ICellCoordinate> getDependantCells(ICellCoordinate cellCoordinate);
+
+    /**
+     * Get the cells that the given coordinate depends on
+     * @param cellCoordinate
+     * @return
+     */
+    public List<ICellCoordinate> getDependantOnCells(ICellCoordinate cellCoordinate);
 
     public void reset();
 }

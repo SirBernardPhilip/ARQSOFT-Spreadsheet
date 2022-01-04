@@ -11,9 +11,11 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICel
 
 public class CellDependencyManager implements ICellDependencyManager {
     Map<ICellCoordinate, List<ICellCoordinate>> cellDependencies;
+    Map<ICellCoordinate, List<ICellCoordinate>> onCellDependencies;
 
     private CellDependencyManager() {
         this.cellDependencies = new HashMap<ICellCoordinate, List<ICellCoordinate>>();
+        this.onCellDependencies = new HashMap<ICellCoordinate, List<ICellCoordinate>>();
     }
 
     public static CellDependencyManager getInstance() {
@@ -23,6 +25,7 @@ public class CellDependencyManager implements ICellDependencyManager {
     @Override
     public void reset() {
         this.cellDependencies = new HashMap<ICellCoordinate, List<ICellCoordinate>>();
+        this.onCellDependencies = new HashMap<ICellCoordinate, List<ICellCoordinate>>();
     }
 
     @Override
@@ -38,6 +41,7 @@ public class CellDependencyManager implements ICellDependencyManager {
                 this.cellDependencies.put(cellCoordinate, currentDependencies);
             }
         }
+        this.onCellDependencies.put(dependantCellCoordinate, cellCoordinates);
     }
 
     @Override
@@ -47,12 +51,22 @@ public class CellDependencyManager implements ICellDependencyManager {
             currentDependencies.remove(dependantCellCoordinate);
             this.cellDependencies.put(cellCoordinate, currentDependencies);
         }
+        this.onCellDependencies.put(dependantCellCoordinate, new LinkedList<ICellCoordinate>());
     }
 
     @Override
     public List<ICellCoordinate> getDependantCells(ICellCoordinate cellCoordinate) {
         if (this.cellDependencies.containsKey(cellCoordinate)) {
             return this.cellDependencies.get(cellCoordinate);
+        } else {
+            return new LinkedList<ICellCoordinate>();
+        }
+    }
+
+    @Override
+    public List<ICellCoordinate> getDependantOnCells(ICellCoordinate cellCoordinate) {
+        if (this.onCellDependencies.containsKey(cellCoordinate)) {
+            return this.onCellDependencies.get(cellCoordinate);
         } else {
             return new LinkedList<ICellCoordinate>();
         }

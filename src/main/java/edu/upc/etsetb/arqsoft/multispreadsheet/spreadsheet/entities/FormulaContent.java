@@ -27,7 +27,7 @@ public class FormulaContent extends ACellContent {
     private FormulaContent(String content) {
         super(content);
         this.value = Optional.empty();
-        this.error = Optional.of("Uncomputed value");
+        this.error = Optional.empty();
         this.elements = new LinkedList<IFormulaElement>();
     }
 
@@ -82,8 +82,10 @@ public class FormulaContent extends ACellContent {
     public Double getNumericalValue() throws NoNumberException {
         if (this.value.isPresent()) {
             return this.value.get();
+        } else if (this.error.isPresent()) {
+            throw new NoNumberException(String.format("The formula is not valid because of %s", this.error.get()));
         } else {
-            throw new NoNumberException();
+            throw new NoNumberException("The formula has not been calculated yet!");
         }
     }
 
@@ -97,9 +99,10 @@ public class FormulaContent extends ACellContent {
     public String getStringValue() {
         if (this.value.isPresent()) {
             return String.valueOf(this.value.get());
-
-        } else {
+        } else if (this.error.isPresent()) {
             return this.error.get();
+        } else {
+            return "Uncalculated";
         }
     }
 }

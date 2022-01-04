@@ -36,7 +36,7 @@ public class SpreadsheetImporter implements ISpreadsheetImporter {
             String[] columns = row.split(";", -1);
             int columnNumber = 1;
             for (String column : columns) {
-                if (column.equals("")) {
+                if (!column.equals("")) {
                     ICellCoordinate coordinate = this.spreadsheetFactory.getCellCoordinate(rowNumber, columnNumber);
                     contentMap.put(coordinate, column);
                 }

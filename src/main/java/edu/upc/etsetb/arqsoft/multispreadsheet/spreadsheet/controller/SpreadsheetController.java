@@ -150,10 +150,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                         this.cellContentFactory);
                 if (cellContent instanceof FormulaContent) {
                     FormulaContent formulaContent = (FormulaContent) cellContent;
-                    this.expressionGenerator.reset();
-                    this.expressionEvaluator.reset();
                     Optional<List<IFormulaElement>> elements;
                     try {
+                        this.expressionGenerator.reset();
                         this.expressionGenerator.generate(entry.getValue().substring(1).replaceAll("\\s+", ""));
                         elements = Optional.of(this.expressionGenerator.getElements());
                         List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
@@ -172,11 +171,12 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                 this.spreadsheet.setCellContent(entry.getKey(), cellContent);
             }
             while (uncalculatedFormulaCoordinates.size() != 0) {
+                List<ICellCoordinate> toRemove = new LinkedList<ICellCoordinate>();
                 for (ICellCoordinate formulaCoord : uncalculatedFormulaCoordinates) {
                     FormulaContent formulaContent = (FormulaContent) this.spreadsheet.getCell(formulaCoord).get()
                             .getContentClass();
                     if (!this.dependencyManager.findCircularReferences(formulaCoord)) {
-                        List<ICellCoordinate> dependantCells = this.dependencyManager.getDependantCells(formulaCoord);
+                        List<ICellCoordinate> dependantCells = this.dependencyManager.getDependantOnCells(formulaCoord);
                         Boolean allDependantsComputed = true;
                         for (ICellCoordinate dependantCell : dependantCells) {
                             ICellContent cellContent = this.spreadsheet.getCell(dependantCell).get().getContentClass();
@@ -185,8 +185,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                             }
                         }
                         if (allDependantsComputed) {
-                            uncalculatedFormulaCoordinates.remove(formulaCoord);
+                            toRemove.add(formulaCoord);
                             try {
+                                this.expressionEvaluator.reset();
                                 formulaContent
                                         .setValue(this.expressionEvaluator.evaluate(formulaContent.getElements(),
                                                 this.spreadsheet));
@@ -195,10 +196,12 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                             }
                         }
                     } else {
-                        uncalculatedFormulaCoordinates.remove(formulaCoord);
+                        toRemove.add(formulaCoord);
                         formulaContent.setError("Circ. Ref. Err.");
                     }
-
+                }
+                for (ICellCoordinate removeCoord : toRemove) {
+                    uncalculatedFormulaCoordinates.remove(removeCoord);
                 }
             }
             System.out.println(String.format("Spreadsheet loaded from %s", loadPath));

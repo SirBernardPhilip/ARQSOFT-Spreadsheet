@@ -23,6 +23,7 @@ public class UserInterface extends AUserInterface {
     protected UserInterface(AMultiSpreadsheetFactory spreadsheetFactory, AMultiCellContentFactory cellContentFactory) {
         super(spreadsheetFactory, cellContentFactory);
         this.spreadsheetController = this.spreadsheetFactory.getController(this.spreadsheetFactory, cellContentFactory);
+        this.spreadsheetController.setScanner(this.scan);
 
     }
 
@@ -47,8 +48,8 @@ public class UserInterface extends AUserInterface {
         System.out.println("(S) <S2V path>              -- Save the spreadsheet to a file");
         System.out.println("(X)                         -- Exit the program");
         System.out.println();
-        if (scan.hasNextLine()) {
-            String line = scan.nextLine();
+        if (this.scan.hasNextLine()) {
+            String line = this.scan.nextLine();
             System.out.println();
             try {
                 return this.runCommand(line);
@@ -92,7 +93,7 @@ public class UserInterface extends AUserInterface {
                 }
                 String filePath = parsedLine[1];
                 this.scan = new Scanner(new FileInputStream(filePath));
-                this.spreadsheetController.setScanner(scan);
+                this.spreadsheetController.setScanner(this.scan);
                 return true;
             case "C":
                 spreadsheetController.createSpreadsheet();
