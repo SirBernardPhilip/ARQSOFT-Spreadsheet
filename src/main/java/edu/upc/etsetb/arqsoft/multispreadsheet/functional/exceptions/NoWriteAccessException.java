@@ -1,6 +1,9 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions;
 
 
+/**
+ * Exception for filesystem write.
+ */
 public class NoWriteAccessException extends Exception {
     /**
      * Creates new NoWriteAccessException with the given filepath.

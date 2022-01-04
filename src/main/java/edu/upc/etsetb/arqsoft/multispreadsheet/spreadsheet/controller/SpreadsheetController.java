@@ -38,6 +38,13 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
     private ICellDependencyManager dependencyManager;
     private UserPrompter userPrompter;
 
+    /**
+     * Create a controller with it's needed dependencies.
+     * 
+     * @param spreadsheetFactory
+     * @param cellContentFactory
+     */
+
     protected SpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
         super(spreadsheetFactory, cellContentFactory);
@@ -49,6 +56,9 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
 
     }
 
+    /**
+     * Set the input for prompting the user.
+     */
     public void setScanner(Scanner scanner) {
         this.userPrompter.setScanner(scanner);
     }
@@ -208,6 +218,10 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         }
     }
 
+    /**
+     * Update the cells that depend on the given cell.
+     * @param originalCellCoordinate
+     */
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
         Map<ICellCoordinate, Boolean> visitedCells = new HashMap<ICellCoordinate, Boolean>();
         visitedCells.put(originalCellCoordinate, true);

@@ -59,7 +59,7 @@ public class FileSystemUtils {
     }
 
     /**
-     * Method that writes a string into a file
+     * Method that reads a file and returns its content as a list of string
      * 
      * @param file
      * @param fileContent

@@ -1,9 +1,13 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions;
 
+/**
+ * General exception class.
+ */
 public class MultiSpreadsheetException extends Exception {
     /**
      * Creates new MultiSpreadsheetException with the given message.
-     * It is the superclass of all exceptions thrown by the MultiSpreadsheet entities.
+     * It is the superclass of all exceptions thrown by the MultiSpreadsheet
+     * entities.
      * 
      * @param message
      */

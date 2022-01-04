@@ -25,6 +25,11 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exce
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.SpreadsheetFormulaException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
 
+/**
+ * Controller for the spreadsheet tests.
+ * It differs from the actual controller in that it actually throws errors
+ * instead of catching them and acting accordingly.
+ */
 public class SpreadsheetControllerForChecker implements ISpreadsheetControllerForChecker {
 
     private ISpreadsheetExpressionGenerator expressionGenerator;
@@ -34,6 +39,12 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
     protected AMultiSpreadsheetFactory spreadsheetFactory;
     protected AMultiCellContentFactory cellContentFactory;
 
+    /**
+     * Create the controller.
+     * 
+     * @param spreadsheetFactory
+     * @param cellContentFactory
+     */
     protected SpreadsheetControllerForChecker(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
         ISpreadsheetFormulaFactory formulaFactory = ISpreadsheetFormulaFactory.getInstance(spreadsheetFactory);
@@ -46,11 +57,23 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
 
     }
 
+    /**
+     * Static method to get a controller instance.
+     * 
+     * @param spreadsheetFactory
+     * @param cellContentFactory
+     * @return SpreadsheetControllerForChecker
+     */
     public static SpreadsheetControllerForChecker getInstance(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
         return new SpreadsheetControllerForChecker(spreadsheetFactory, cellContentFactory);
     }
 
+    /**
+     * Set the content of a cell
+     * 
+     * @throws MultiSpreadsheetException
+     */
     public void setCellContent(String cellCoordString, String cellContentString)
             throws MultiSpreadsheetException {
 
@@ -118,6 +141,11 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
         }
     }
 
+    /**
+     * Update the dependant cells of a cell.
+     * 
+     * @param cellCoord
+     */
     private void updateDependantCells(ICellCoordinate originalCellCoordinate) {
         Map<ICellCoordinate, Boolean> visitedCells = new HashMap<ICellCoordinate, Boolean>();
         visitedCells.put(originalCellCoordinate, true);

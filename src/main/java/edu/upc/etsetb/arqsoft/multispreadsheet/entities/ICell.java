@@ -15,6 +15,11 @@ public interface ICell {
      */
     public String getContent();
 
+    /**
+     * Return the content object.
+     * 
+     * @return ICellContent
+     */
     public ICellContent getContentClass();
 
     /**

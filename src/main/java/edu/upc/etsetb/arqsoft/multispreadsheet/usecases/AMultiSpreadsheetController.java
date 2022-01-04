@@ -7,6 +7,9 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetExporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetImporter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.ISpreadsheetPrinter;
 
+/**
+ * Abstract class for the controller of the application.
+ */
 public abstract class AMultiSpreadsheetController {
 
     protected ISpreadsheet spreadsheet;
@@ -15,6 +18,12 @@ public abstract class AMultiSpreadsheetController {
     protected ISpreadsheetImporter spreadsheetImporter;
     protected AMultiSpreadsheetFactory spreadsheetFactory;
     protected AMultiCellContentFactory cellContentFactory;
+
+    /**
+     * Constructor for the AMultiSpreadsheetController class.
+     * @param spreadsheetFactory
+     * @param cellContentFactory
+     */
 
     protected AMultiSpreadsheetController(AMultiSpreadsheetFactory spreadsheetFactory,
             AMultiCellContentFactory cellContentFactory) {
@@ -26,10 +35,10 @@ public abstract class AMultiSpreadsheetController {
         this.spreadsheetImporter = spreadsheetFactory.getSpreadsheetImporter(spreadsheetFactory);
     }
 
-    public ISpreadsheet getSpreadsheet() {
-        return this.spreadsheet;
-    }
-
+    /**
+     * Method that sets the scanner for the controller.
+     * @param scanner
+     */
     public abstract void setScanner(Scanner scanner);
 
     /**
