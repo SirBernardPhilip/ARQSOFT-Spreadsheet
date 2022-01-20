@@ -56,7 +56,6 @@ public class SpreadsheetPrinter implements ISpreadsheetPrinter {
     public void printSpreadsheet(ISpreadsheet spreadsheet)
             throws MultiSpreadsheetException {
 
-        // FIXME: Can I use an external library for this? The paddings will be hell to
         // work with.
         String cellContents[][] = this.getAllValuesMatrix(spreadsheet);
         for (int i = 0; i < cellContents.length; ++i) {

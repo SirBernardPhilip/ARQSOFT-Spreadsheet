@@ -64,7 +64,6 @@ public class CellCoordinate implements ICellCoordinate {
      */
     public static CellCoordinate fromString(String cellCoordinateString)
             throws InvalidStringCoordinatesException, InvalidNumberCoordinatesException, NumberFormatException {
-        // FIXME: Do this with regex, this iteration is ugly
         int foundNum = -1;
         for (int i = 0; (foundNum == -1) && (i < cellCoordinateString.length()); ++i) {
             if (Character.isDigit(cellCoordinateString.charAt(i))) {
