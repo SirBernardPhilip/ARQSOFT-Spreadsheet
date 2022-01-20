@@ -16,7 +16,6 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ISpreadsheet;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
@@ -87,16 +86,14 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
             ICellContent cellContent = this.spreadsheetFactory.getCellContent(cellContentString,
                     this.cellContentFactory);
 
-            if (cellContent instanceof FormulaContent) {
-                FormulaContent formulaContent = (FormulaContent) cellContent;
-
+            if (cellContent.isFormulaContent()) {
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
                 Optional<List<IFormulaElement>> elements;
                 try {
                     this.expressionGenerator.generate(cellContentString.substring(1).replaceAll("\\s+", ""));
                 } catch (SpreadsheetFormulaException e) {
-                    formulaContent.setError("Expr. Err.");
+                    cellContent.setError("Expr. Err.");
                     this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
                     this.updateDependantCells(cellCoord.get());
                     throw e;
@@ -104,28 +101,28 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
                 elements = Optional.of(this.expressionGenerator.getElements());
                 List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
                 for (IFormulaElement element : elements.get()) {
-                    if (element instanceof FormulaCellReference) {
+                    if (element.isCellReference()) {
                         cellCoordinates.add(((FormulaCellReference) element).getCellCoordinate());
                     }
                 }
                 this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
 
                 if (elements.isPresent()) {
-                    formulaContent.setElements(elements.get());
+                    cellContent.setElements(elements.get());
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
                         try {
-                            formulaContent
+                            cellContent
                                     .setValue(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
                         } catch (MultiSpreadsheetException e) {
-                            formulaContent.setError("Eval. Err.");
+                            cellContent.setError("Eval. Err.");
                             this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
                             this.updateDependantCells(cellCoord.get());
                             throw e;
                         }
 
                     } else {
-                        formulaContent.setError("Circ. Ref. Err.");
+                        cellContent.setError("Circ. Ref. Err.");
                         this.spreadsheet.setCellContent(cellCoord.get(), cellContent);
                         this.updateDependantCells(cellCoord.get());
                         System.out.println("There was a circular reference.");
@@ -163,8 +160,7 @@ public class SpreadsheetControllerForChecker implements ISpreadsheetControllerFo
         while (queue.size() != 0) {
             ICellCoordinate top = queue.poll();
 
-            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
-                    .getContentClass();
+            ICellContent cellContent = this.spreadsheet.getCell(top).get().getContentClass();
             if (this.dependencyManager.findCircularReferences(top)) {
                 cellContent.setError("Circ. Ref. Err.");
             } else {

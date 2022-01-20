@@ -15,13 +15,12 @@ import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoReadAccessException;
 import edu.upc.etsetb.arqsoft.multispreadsheet.functional.exceptions.NoWriteAccessException;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.FormulaContent;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ICellDependencyManager;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.ISpreadsheetFormulaFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IExpressionEvaluator;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaCellReference;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.expression.ISpreadsheetExpressionGenerator;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.usecases.formula.evaluation.FormulaCellReference;
 import edu.upc.etsetb.arqsoft.multispreadsheet.ui.UserPrompter;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiCellContentFactory;
 import edu.upc.etsetb.arqsoft.multispreadsheet.usecases.AMultiSpreadsheetController;
@@ -158,8 +157,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             for (Entry<ICellCoordinate, String> entry : contentMap.get().entrySet()) {
                 ICellContent cellContent = this.spreadsheetFactory.getCellContent(entry.getValue(),
                         this.cellContentFactory);
-                if (cellContent instanceof FormulaContent) {
-                    FormulaContent formulaContent = (FormulaContent) cellContent;
+                if (cellContent.isFormulaContent()) {
                     Optional<List<IFormulaElement>> elements;
                     try {
                         this.expressionGenerator.reset();
@@ -167,15 +165,15 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                         elements = Optional.of(this.expressionGenerator.getElements());
                         List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
                         for (IFormulaElement element : elements.get()) {
-                            if (element instanceof FormulaCellReference) {
-                                cellCoordinates.add(((FormulaCellReference) element).getCellCoordinate());
+                            if (element.isCellReference()) {
+                                cellCoordinates.add(((IFormulaCellReference) element).getCellCoordinate());
                             }
                         }
                         this.dependencyManager.addDependantCell(entry.getKey(), cellCoordinates);
-                        formulaContent.setElements(elements.get());
+                        cellContent.setElements(elements.get());
                         uncalculatedFormulaCoordinates.add(entry.getKey());
                     } catch (MultiSpreadsheetException e) {
-                        formulaContent.setError("Expr. Err.");
+                        cellContent.setError("Expr. Err.");
                     }
                 }
                 this.spreadsheet.setCellContent(entry.getKey(), cellContent);
@@ -183,14 +181,13 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             while (uncalculatedFormulaCoordinates.size() != 0) {
                 List<ICellCoordinate> toRemove = new LinkedList<ICellCoordinate>();
                 for (ICellCoordinate formulaCoord : uncalculatedFormulaCoordinates) {
-                    FormulaContent formulaContent = (FormulaContent) this.spreadsheet.getCell(formulaCoord).get()
-                            .getContentClass();
+                    ICellContent formulaContent = this.spreadsheet.getCell(formulaCoord).get().getContentClass();
                     if (!this.dependencyManager.findCircularReferences(formulaCoord)) {
                         List<ICellCoordinate> dependantCells = this.dependencyManager.getDependantOnCells(formulaCoord);
                         Boolean allDependantsComputed = true;
                         for (ICellCoordinate dependantCell : dependantCells) {
                             ICellContent cellContent = this.spreadsheet.getCell(dependantCell).get().getContentClass();
-                            if ((cellContent instanceof FormulaContent) && ((FormulaContent) cellContent).isUnset()) {
+                            if ((cellContent.isFormulaContent()) && cellContent.isUnset()) {
                                 allDependantsComputed = false;
                             }
                         }
@@ -240,8 +237,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
         while (queue.size() != 0) {
             ICellCoordinate top = queue.poll();
 
-            FormulaContent cellContent = (FormulaContent) this.spreadsheet.getCell(top).get()
-                    .getContentClass();
+            ICellContent cellContent = this.spreadsheet.getCell(top).get().getContentClass();
             if (this.dependencyManager.findCircularReferences(top)) {
                 cellContent.setError("Circ. Ref. Err.");
             } else {
@@ -288,8 +284,7 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
             ICellContent cellContent = this.spreadsheetFactory.getCellContent(cellContentString,
                     this.cellContentFactory);
 
-            if (cellContent instanceof FormulaContent) {
-                FormulaContent formulaContent = (FormulaContent) cellContent;
+            if (cellContent.isFormulaContent()) {
                 this.expressionGenerator.reset();
                 this.expressionEvaluator.reset();
                 Optional<List<IFormulaElement>> elements;
@@ -299,29 +294,29 @@ public class SpreadsheetController extends AMultiSpreadsheetController {
                     elements = Optional.of(this.expressionGenerator.getElements());
                     List<ICellCoordinate> cellCoordinates = new LinkedList<ICellCoordinate>();
                     for (IFormulaElement element : elements.get()) {
-                        if (element instanceof FormulaCellReference) {
-                            cellCoordinates.add(((FormulaCellReference) element).getCellCoordinate());
+                        if (element.isCellReference()) {
+                            cellCoordinates.add(((IFormulaCellReference) element).getCellCoordinate());
                         }
                     }
                     this.dependencyManager.addDependantCell(cellCoord.get(), cellCoordinates);
                 } catch (MultiSpreadsheetException e) {
                     elements = Optional.empty();
-                    formulaContent.setError("Expr. Err.");
+                    cellContent.setError("Expr. Err.");
                 }
 
                 if (elements.isPresent()) {
-                    formulaContent.setElements(elements.get());
+                    cellContent.setElements(elements.get());
 
                     if (!this.dependencyManager.findCircularReferences(cellCoord.get())) {
                         try {
-                            formulaContent
+                            cellContent
                                     .setValue(this.expressionEvaluator.evaluate(elements.get(), this.spreadsheet));
 
                         } catch (MultiSpreadsheetException | NumberFormatException e) {
-                            formulaContent.setError("Eval. Err.");
+                            cellContent.setError("Eval. Err.");
                         }
                     } else {
-                        formulaContent.setError("Circ. Ref. Err.");
+                        cellContent.setError("Circ. Ref. Err.");
 
                         System.out.println("A circular reference was found");
                     }

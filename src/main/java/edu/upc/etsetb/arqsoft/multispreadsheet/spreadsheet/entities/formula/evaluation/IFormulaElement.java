@@ -12,4 +12,6 @@ public interface IFormulaElement {
      * @throws MultiSpreadsheetException
      */
     public void accept(IFormulaElementVisitor visitor) throws MultiSpreadsheetException;
+
+    public Boolean isCellReference();
 }

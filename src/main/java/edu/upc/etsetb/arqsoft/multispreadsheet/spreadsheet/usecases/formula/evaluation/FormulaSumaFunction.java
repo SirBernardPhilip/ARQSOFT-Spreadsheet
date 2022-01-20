@@ -29,4 +29,8 @@ public class FormulaSumaFunction implements IFormulaFunction {
         visitor.visit(this);
     }
 
+    @Override
+    public Boolean isCellReference() {
+        return false;
+    }
 }

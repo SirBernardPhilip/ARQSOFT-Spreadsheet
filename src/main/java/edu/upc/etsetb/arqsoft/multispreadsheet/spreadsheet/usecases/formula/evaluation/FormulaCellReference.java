@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.ICellCoordinate;
 import edu.upc.etsetb.arqsoft.multispreadsheet.entities.exceptions.MultiSpreadsheetException;
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaCellReference;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
-import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaOperand;
 
-public class FormulaCellReference implements IFormulaOperand {
+public class FormulaCellReference implements IFormulaCellReference {
 
     private ICellCoordinate cellCoordinate;
     private Optional<Double> value;
@@ -41,6 +41,11 @@ public class FormulaCellReference implements IFormulaOperand {
 
     public void setValue(Double value) {
         this.value = Optional.of(value);
+    }
+
+    @Override
+    public Boolean isCellReference() {
+        return true;
     }
 
 }

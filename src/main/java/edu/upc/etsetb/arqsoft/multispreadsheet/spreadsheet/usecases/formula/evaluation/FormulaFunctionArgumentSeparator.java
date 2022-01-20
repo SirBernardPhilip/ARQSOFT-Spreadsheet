@@ -18,4 +18,8 @@ public class FormulaFunctionArgumentSeparator implements IFormulaFunctionArgumen
         visitor.visit(this);
     }
 
+    @Override
+    public Boolean isCellReference() {
+        return false;
+    }
 }

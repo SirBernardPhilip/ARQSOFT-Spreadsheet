@@ -1,5 +1,9 @@
 package edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElement;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.exceptions.NoNumberException;
 
 public class TextualContent extends ACellContent {
@@ -68,5 +72,40 @@ public class TextualContent extends ACellContent {
     @Override
     public String getStringValue() {
         return this.value;
+    }
+
+    /**
+     * Return true if the cell content is a formula content
+     * 
+     * @return boolean
+     */
+    @Override
+    public boolean isFormulaContent() {
+        return false;
+    }
+
+    @Override
+    public void setElements(List<IFormulaElement> list) {
+        return;
+    }
+
+    @Override
+    public void setError(String string) {
+        return;
+    }
+
+    @Override
+    public Boolean isUnset() {
+        return false;
+    }
+
+    @Override
+    public List<IFormulaElement> getElements() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void setValue(Double evaluate) {
+        return;
     }
 }

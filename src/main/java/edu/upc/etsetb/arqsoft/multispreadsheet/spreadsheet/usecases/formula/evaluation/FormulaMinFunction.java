@@ -6,7 +6,7 @@ import java.util.List;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaElementVisitor;
 import edu.upc.etsetb.arqsoft.multispreadsheet.spreadsheet.entities.formula.evaluation.IFormulaFunction;
 
-public class FormulaMinFunction implements IFormulaFunction{
+public class FormulaMinFunction implements IFormulaFunction {
 
     private FormulaMinFunction() {
 
@@ -25,5 +25,9 @@ public class FormulaMinFunction implements IFormulaFunction{
     public void accept(IFormulaElementVisitor visitor) {
         visitor.visit(this);
     }
-    
+
+    @Override
+    public Boolean isCellReference() {
+        return false;
+    }
 }

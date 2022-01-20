@@ -6,4 +6,5 @@ public interface IFormulaOperand extends IFormulaElement {
 
     public Double getValue() throws MultiSpreadsheetException;
 
+
 }

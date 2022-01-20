@@ -26,4 +26,9 @@ public class FormulaNumeric implements IFormulaOperand {
         return this.value;
     }
 
+    @Override
+    public Boolean isCellReference() {
+        return false;
+    }
+
 }

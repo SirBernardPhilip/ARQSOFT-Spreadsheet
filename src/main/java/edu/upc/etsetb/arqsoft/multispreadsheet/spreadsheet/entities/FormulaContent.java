@@ -66,6 +66,11 @@ public class FormulaContent extends ACellContent {
         this.error = Optional.empty();
     }
 
+    /**
+     * Set the error message string and unset the value
+     * 
+     * @param error
+     */
     public void setError(String error) {
         this.value = Optional.empty();
         this.error = Optional.of(error);
@@ -104,5 +109,15 @@ public class FormulaContent extends ACellContent {
         } else {
             return "Uncalculated";
         }
+    }
+
+    /**
+     * Return true if the cell content is a formula content
+     * 
+     * @return boolean
+     */
+    @Override
+    public boolean isFormulaContent() {
+        return true;
     }
 }

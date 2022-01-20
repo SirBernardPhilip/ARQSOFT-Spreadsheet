@@ -24,4 +24,9 @@ public class FormulaMultiplyOperator implements IFormulaOperator {
         visitor.visit(this);
     }
 
+    @Override
+    public Boolean isCellReference() {
+        return false;
+    }
+
 }
